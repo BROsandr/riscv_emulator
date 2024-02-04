@@ -21,3 +21,5 @@
 -fstack-protector
 -Wsign-conversion
 -Weffc++
+
+-I./inc
