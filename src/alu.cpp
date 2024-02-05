@@ -149,4 +149,12 @@ TEST_CASE("Alu_SUB", "[SUB]") {
     REQUIRE(flag == 0);
   }
 }
+
+TEST_CASE("Alu_XOR", "[XOR]") {
+  SECTION("11 ^ 10") {
+    auto [result, flag] = calculate(Alu::Op::XOR, 0b11, 0b10);
+    REQUIRE(result == 0b01);
+    REQUIRE(flag   == 0);
+  }
+}
 #endif
