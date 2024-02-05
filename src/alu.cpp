@@ -84,4 +84,54 @@ TEST_CASE("Alu_ADD", "[ADD]") {
     REQUIRE(alu.get_flag  () == 0);
   }
 }
+
+TEST_CASE("Alu_SUB", "[SUB]") {
+  Alu alu{};
+  SECTION("0 - 0") {
+    alu.calculate(Alu::Op::SUB, 0, 0);
+    REQUIRE(alu.get_result() == 0);
+    REQUIRE(alu.get_flag()   == 0);
+  }
+
+  SECTION("-1 - 1") {
+    alu.calculate(Alu::Op::SUB, -1u, 1u);
+    REQUIRE(alu.get_result() == -2u);
+    REQUIRE(alu.get_flag()   ==  0 );
+  }
+  SECTION("1 - 2") {
+    alu.calculate(Alu::Op::SUB, 1, 2);
+    REQUIRE(alu.get_result() == -1u);
+    REQUIRE(alu.get_flag  () == 0);
+  }
+
+  SECTION("1 - (-2)") {
+    alu.calculate(Alu::Op::SUB, 1, -2u);
+    REQUIRE(alu.get_result() == 3u);
+    REQUIRE(alu.get_flag  () ==  0);
+  }
+
+  SECTION("-1 - 2") {
+    alu.calculate(Alu::Op::SUB, -1u, 2);
+    REQUIRE(alu.get_result() == -3u);
+    REQUIRE(alu.get_flag  () == 0);
+  }
+
+  SECTION("-1 - (-2)") {
+    alu.calculate(Alu::Op::SUB, -1u, -2u);
+    REQUIRE(alu.get_result() == 1u);
+    REQUIRE(alu.get_flag  () ==  0);
+  }
+
+  SECTION("min_len - 1") {
+    alu.calculate(Alu::Op::SUB, 0, 1);
+    REQUIRE(alu.get_result() == std::numeric_limits<Uxlen>::max());
+    REQUIRE(alu.get_flag  () == 0);
+  }
+
+  SECTION("max_xlen - (-1)") {
+    alu.calculate(Alu::Op::SUB, std::numeric_limits<Uxlen>::max(), -1u);
+    REQUIRE(alu.get_result() == 0);
+    REQUIRE(alu.get_flag  () == 0);
+  }
+}
 #endif
