@@ -1,15 +1,15 @@
 #include "alu.hpp"
 
 #include "exception.hpp"
-#include <limits>
 
 namespace {
   using enum Alu::Op;
 
-  std::pair<Uxlen, bool> calculate(Alu::Op op, Uxlen a, Uxlen b) {
-      const Uxlen shamt{b & 0b11111};
-      Sxlen a_signed{static_cast<Sxlen>(a)};
-      Sxlen b_signed{static_cast<Sxlen>(b)};
+  constexpr std::pair<Uxlen, bool> calculate(Alu::Op op, Uxlen a, Uxlen b) {
+      constexpr Uxlen shamt_mask{(sizeof(Uxlen) * 8) - 1};
+      const Uxlen shamt{b & shamt_mask};
+      const Sxlen a_signed{static_cast<Sxlen>(a)};
+      const Sxlen b_signed{static_cast<Sxlen>(b)};
 
       Uxlen result{};
       bool  flag  {};
@@ -41,8 +41,8 @@ namespace {
   }
 }
 
-Alu::Alu(Op op, Uxlen a, Uxlen b) {
-  auto out = calculate(op, a, b);
+constexpr Alu::Alu(Op op, Uxlen a, Uxlen b) {
+  const auto &out = calculate(op, a, b);
 
   this->result = out.first;
   this->flag   = out.second;
@@ -51,6 +51,8 @@ Alu::Alu(Op op, Uxlen a, Uxlen b) {
 #ifdef UNIT_TEST
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
+
+#include <limits>
 
 TEST_CASE("Alu_ADD", "[ADD]") {
   SECTION("0 + 0") {

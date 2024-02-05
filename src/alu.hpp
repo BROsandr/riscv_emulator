@@ -20,10 +20,10 @@ class Alu {
       SLTS = 0b00010,
       SLTU = 0b00011,
     };
-    Alu(Op op, Uxlen a, Uxlen b);
+    constexpr Alu(Op op, Uxlen a, Uxlen b);
 
-    Uxlen get_result() { return result; }
-    bool  get_flag  () { return flag;   }
+    constexpr Uxlen get_result() const { return result; }
+    constexpr bool  get_flag  () const { return flag;   }
 
   private:
     Uxlen result{};
