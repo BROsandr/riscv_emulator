@@ -1,4 +1,6 @@
 #pragma once
 
-using Uxlen = unsigned long int;
-using Sxlen = signed   long int;
+#include <cstdint>
+
+using Uxlen = std::uint32_t;
+using Sxlen = std::int32_t;
