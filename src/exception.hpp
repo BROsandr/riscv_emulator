@@ -5,7 +5,7 @@ namespace Errors {
     using std::runtime_error::runtime_error;
   };
 
-  class Unknown_alu_op : public Error {
+  struct Unknown_alu_op : public Error {
     using Error::Error;
   };
 }
