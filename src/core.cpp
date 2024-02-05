@@ -1,12 +1,12 @@
 #include "Core.hpp"
 
 void Core::cycle() {
-  const Xlen instruction{fetch_instruction(this->instr_mem)};
+  const Uxlen instruction{fetch_instruction(this->instr_mem)};
 
   const Decode_stage decode_stage{instruction};
 
-  const Xlen rd1{this->rf.get(decode_stage.get_ra1())};
-  const Xlen rd2{this->rf.get(decode_stage.get_ra2())};
+  const Uxlen rd1{this->rf.get(decode_stage.get_ra1())};
+  const Uxlen rd2{this->rf.get(decode_stage.get_ra2())};
 
   Execute_stage execute_stage{decode_stage, rd1, rd2};
 

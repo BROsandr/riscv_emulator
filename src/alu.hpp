@@ -22,12 +22,12 @@ class Alu {
       SLTS = 0b00010,
       SLTU = 0b00011,
     };
-    void calculate(Op op, Xlen a, Xlen b);
+    void calculate(Op op, Uxlen a, Uxlen b);
 
-    Xlen get_result() { return result; }
-    bool get_flag  () { return flag;   }
+    Uxlen get_result() { return result; }
+    bool  get_flag  () { return flag;   }
 
   private:
-    Xlen result{};
+    Uxlen result{};
     bool flag  {};
 };

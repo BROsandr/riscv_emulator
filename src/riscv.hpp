@@ -1,3 +1,4 @@
 #pragma once
 
-using Xlen = long int;
+using Uxlen = unsigned long int;
+using Sxlen = signed   long int;
