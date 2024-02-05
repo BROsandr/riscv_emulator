@@ -32,9 +32,9 @@ namespace {
         case EQ  : flag   = a == b                               ; break;
         case NE  : flag   = a != b                               ; break;
         default  :
-          throw Errors::Unknown_alu_op(
+          throw Errors::Unknown_alu_op{
               std::to_string(static_cast<std::underlying_type_t<typename Alu::Op>>(op))
-          );
+          };
       }
 
       return {result, flag};
