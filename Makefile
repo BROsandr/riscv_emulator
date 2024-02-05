@@ -26,9 +26,15 @@ INC_DIRS := $(shell find $(SRC_DIRS) -type d)
 # Add a prefix to INC_DIRS. So moduleA would become -ImoduleA. GCC understands this -I flag
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
+WARNING_FLAGS := -Wall -Wextra -pedantic -Wshadow -Wformat=2 -Wfloat-equal -Wconversion -Wlogical-op -Wshift-overflow=2 -Wduplicated-cond -Wcast-qual -Wcast-align -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -D_FORTIFY_SOURCE=2 -fno-sanitize-recover -fstack-protector -Wsign-conversion -Weffc++ # -fsanitize=address -fsanitize=undefined
+
+CPPFLAGS := $(INC_FLAGS) $(WARNING_FLAGS) -std=c++20
 # The -MMD and -MP flags together generate Makefiles for us!
-# These files will have .d instead of .o as the output.
-CPPFLAGS := $(INC_FLAGS) -MMD -MP
+DEPS_DETECTION_FLAGS:=-MMD -MP
+
+ifndef UNIT_TEST
+CPPFLAGS+=$(DEPS_DETECTION_FLAGS)
+endif
 
 default: clean run
 
