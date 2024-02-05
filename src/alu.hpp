@@ -1,7 +1,5 @@
 #include "riscv.hpp"
 
-#include <utility>
-
 class Alu {
   public:
     enum Op {
@@ -22,7 +20,7 @@ class Alu {
       SLTS = 0b00010,
       SLTU = 0b00011,
     };
-    void calculate(Op op, Uxlen a, Uxlen b);
+    Alu(Op op, Uxlen a, Uxlen b);
 
     Uxlen get_result() { return result; }
     bool  get_flag  () { return flag;   }
