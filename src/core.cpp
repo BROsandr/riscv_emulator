@@ -1,20 +1,19 @@
 #include "Core.hpp"
 
 void Core::cycle() {
-  Fetch_stage fectch_stage{this->instr_mem};
+  const Xlen instruction{fetch_instruction(this->instr_mem)};
 
-  Memory_stage memory_stage{this->data_mem};
-  Decoder decoder{};
+  const Decode_stage decode_stage{instruction};
 
-  Xlen instr = fectch_stage.get_instruction();
+  const Xlen rd1{this->rf.get(decode_stage.get_ra1())};
+  const Xlen rd2{this->rf.get(decode_stage.get_ra2())};
 
-  decoder.decode(instr);
+  Execute_stage execute_stage{decode_stage, rd1, rd2};
 
-  Execute_stage execute_stage{docoder.get_unit_select, decoder.get_op, decoder.get_rs1, decoder.get_rs2};
-  execute_stage.execute();
+  Control_unit control_unit{decode_stage, this->current_pc, rd1};
 
-  Csr csr
+  write_back();
 
-  fectch_stage.calculate_next_pc();
+  calculate_next_pc(execute_stage.get_result(), control_unit.get_csr_result(), this->data_mem.read();
 
 }
