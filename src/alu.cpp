@@ -159,4 +159,288 @@ TEST_CASE("Alu_XOR", "[XOR]") {
     REQUIRE(flag   == 0);
   }
 }
+
+TEST_CASE("Alu_OR", "[OR]") {
+  SECTION("11 | 10") {
+    auto [result, flag] = calculate(Alu::Op::OR, 0b11, 0b10);
+    REQUIRE(result == 0b11);
+    REQUIRE(flag   == 0);
+  }
+}
+
+TEST_CASE("Alu_AND", "[AND]") {
+  SECTION("11 & 10") {
+    auto [result, flag] = calculate(Alu::Op::AND, 0b11, 0b10);
+    REQUIRE(result == 0b10);
+    REQUIRE(flag   == 0);
+  }
+}
+
+TEST_CASE("Alu_SRA", "[SRA]") {
+  SECTION("-2 >>> 1") {
+    auto [result, flag] = calculate(Alu::Op::SRA, -2u, 1);
+    REQUIRE(result == -1u);
+    REQUIRE(flag   == 0);
+  }
+
+  SECTION("-2 >>> 0") {
+    auto [result, flag] = calculate(Alu::Op::SRA, -2u, 0);
+    REQUIRE(result == -2u);
+    REQUIRE(flag   == 0);
+  }
+
+  SECTION("-2 >>> 0") {
+    auto [result, flag] = calculate(Alu::Op::SRA, -2u, 0);
+    REQUIRE(result == -2u);
+    REQUIRE(flag   == 0);
+  }
+
+  SECTION("2 >>> 1") {
+    auto [result, flag] = calculate(Alu::Op::SRA, 2, 1);
+    REQUIRE(result == 1);
+    REQUIRE(flag   == 0);
+  }
+}
+
+TEST_CASE("Alu_SRL", "[SRL]") {
+  SECTION("-2 >> 1") {
+    auto [result, flag] = calculate(Alu::Op::SRL, -2u, 1);
+    REQUIRE(result == 0x7FFFFFFF);
+    REQUIRE(flag   == 0);
+  }
+
+  SECTION("4 >> 2") {
+    auto [result, flag] = calculate(Alu::Op::SRL, 4, 2);
+    REQUIRE(result == 1);
+    REQUIRE(flag   == 0);
+  }
+}
+
+TEST_CASE("Alu_SLL", "[SLL]") {
+  SECTION("-2 << 1") {
+    auto [result, flag] = calculate(Alu::Op::SLL, -2u, 1);
+    REQUIRE(result == 0xFFFFFFFC);
+    REQUIRE(flag   == 0);
+  }
+
+  SECTION("3 << 2") {
+    auto [result, flag] = calculate(Alu::Op::SLL, 3, 2);
+    REQUIRE(result == 0xc);
+    REQUIRE(flag   == 0);
+  }
+}
+
+TEST_CASE("Alu_SLTS", "[SLTS]") {
+  SECTION("1 < 0") {
+    auto [result, flag] = calculate(Alu::Op::SLTS, 1, 0);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == 0);
+  }
+  SECTION("0 < 1") {
+    auto [result, flag] = calculate(Alu::Op::SLTS, 0, 1);
+    REQUIRE(result == 1);
+    REQUIRE(flag   == 0);
+  }
+  SECTION("0 < 0") {
+    auto [result, flag] = calculate(Alu::Op::SLTS, 0, 0);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == 0);
+  }
+  SECTION("-2 < -1") {
+    auto [result, flag] = calculate(Alu::Op::SLTS, -2u, -1u);
+    REQUIRE(result == 1);
+    REQUIRE(flag   == 0);
+  }
+  SECTION("-1 < -2") {
+    auto [result, flag] = calculate(Alu::Op::SLTS, -1u, -2u);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == 0);
+  }
+}
+
+TEST_CASE("Alu_LTS", "[LTS]") {
+  SECTION("1 < 0") {
+    auto [result, flag] = calculate(Alu::Op::LTS, 1, 0);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == false);
+  }
+  SECTION("0 < 1") {
+    auto [result, flag] = calculate(Alu::Op::LTS, 0, 1);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == true);
+  }
+  SECTION("0 < 0") {
+    auto [result, flag] = calculate(Alu::Op::LTS, 0, 0);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == false);
+  }
+  SECTION("-2 < -1") {
+    auto [result, flag] = calculate(Alu::Op::LTS, -2u, -1u);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == true);
+  }
+  SECTION("-1 < -2") {
+    auto [result, flag] = calculate(Alu::Op::LTS, -1u, -2u);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == false);
+  }
+}
+
+TEST_CASE("Alu_LTU", "[LTU]") {
+  SECTION("1 < 0") {
+    auto [result, flag] = calculate(Alu::Op::LTU, 1, 0);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == false);
+  }
+  SECTION("0 < 1") {
+    auto [result, flag] = calculate(Alu::Op::LTU, 0, 1);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == true);
+  }
+  SECTION("0 < 0") {
+    auto [result, flag] = calculate(Alu::Op::LTU, 0, 0);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == false);
+  }
+  SECTION("-2 < -1") {
+    auto [result, flag] = calculate(Alu::Op::LTU, -2u, -1u);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == true);
+  }
+  SECTION("-1 < -2") {
+    auto [result, flag] = calculate(Alu::Op::LTU, -1u, -2u);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == false);
+  }
+}
+
+TEST_CASE("Alu_GES", "[GES]") {
+  SECTION("1 >= 0") {
+    auto [result, flag] = calculate(Alu::Op::GES, 1, 0);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == true);
+  }
+  SECTION("0 >= 1") {
+    auto [result, flag] = calculate(Alu::Op::GES, 0, 1);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == false);
+  }
+  SECTION("0 >= 0") {
+    auto [result, flag] = calculate(Alu::Op::GES, 0, 0);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == true);
+  }
+  SECTION("-2 >= -1") {
+    auto [result, flag] = calculate(Alu::Op::GES, -2u, -1u);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == false);
+  }
+  SECTION("-1 >= -2") {
+    auto [result, flag] = calculate(Alu::Op::GES, -1u, -2u);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == true);
+  }
+}
+
+TEST_CASE("Alu_GEU", "[GEU]") {
+  SECTION("1 >= 0") {
+    auto [result, flag] = calculate(Alu::Op::GEU, 1, 0);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == true);
+  }
+  SECTION("0 >= 1") {
+    auto [result, flag] = calculate(Alu::Op::GEU, 0, 1);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == false);
+  }
+  SECTION("0 >= 0") {
+    auto [result, flag] = calculate(Alu::Op::GEU, 0, 0);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == true);
+  }
+  SECTION("-2 >= -1") {
+    auto [result, flag] = calculate(Alu::Op::GEU, -2u, -1u);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == false);
+  }
+  SECTION("-1 >= -2") {
+    auto [result, flag] = calculate(Alu::Op::GEU, -1u, -2u);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == true);
+  }
+}
+
+TEST_CASE("Alu_EQ", "[EQ]") {
+  SECTION("1 == 0") {
+    auto [result, flag] = calculate(Alu::Op::EQ, 1, 0);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == false);
+  }
+  SECTION("0 == 1") {
+    auto [result, flag] = calculate(Alu::Op::EQ, 0, 1);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == false);
+  }
+  SECTION("0 == 0") {
+    auto [result, flag] = calculate(Alu::Op::EQ, 0, 0);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == true);
+  }
+  SECTION("33 == 33") {
+    auto [result, flag] = calculate(Alu::Op::EQ, -33u, -33u);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == true);
+  }
+  SECTION("-2 == -2") {
+    auto [result, flag] = calculate(Alu::Op::EQ, -2u, -2u);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == true);
+  }
+}
+
+TEST_CASE("Alu_NE", "[NE]") {
+  SECTION("1 != 0") {
+    auto [result, flag] = calculate(Alu::Op::NE, 1, 0);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == true);
+  }
+  SECTION("0 != 1") {
+    auto [result, flag] = calculate(Alu::Op::NE, 0, 1);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == true);
+  }
+  SECTION("0 != 0") {
+    auto [result, flag] = calculate(Alu::Op::NE, 0, 0);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == false);
+  }
+  SECTION("33 != 33") {
+    auto [result, flag] = calculate(Alu::Op::NE, -33u, -33u);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == false);
+  }
+  SECTION("-2 != -2") {
+    auto [result, flag] = calculate(Alu::Op::NE, -2u, -2u);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == false);
+  }
+}
+
+TEST_CASE("Alu_throws", "[throws]") {
+  REQUIRE_THROWS(calculate(static_cast<Alu::Op>(-1), 1, 0));
+}
+
+TEST_CASE("Alu class", "[class]") {
+
+  SECTION("2 + 3") {
+    Alu alu{Alu::Op::ADD, 2, 3};
+    REQUIRE(alu.get_result() == 5);
+    REQUIRE(alu.get_flag  () == 0);
+  }
+  SECTION("2 == 2") {
+    Alu alu{Alu::Op::EQ, 2, 2};
+    REQUIRE(alu.get_result() == 0);
+    REQUIRE(alu.get_flag  () == 1);
+  }
+}
 #endif
