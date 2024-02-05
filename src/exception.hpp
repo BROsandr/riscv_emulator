@@ -8,4 +8,8 @@ namespace Errors {
   struct Unknown_alu_op : public Error {
     using Error::Error;
   };
+
+  struct Illegal_instruction : public Error {
+    using Error::Error;
+  };
 }
