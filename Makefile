@@ -26,11 +26,21 @@ INC_DIRS := $(shell find $(SRC_DIRS) -type d)
 # Add a prefix to INC_DIRS. So moduleA would become -ImoduleA. GCC understands this -I flag
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
-WARNING_FLAGS := -Wall -Wextra -pedantic -Wshadow -Wformat=2 -Wfloat-equal -Wconversion -Wlogical-op -Wshift-overflow=2 -Wduplicated-cond -Wcast-qual -Wcast-align -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -D_FORTIFY_SOURCE=2 -fno-sanitize-recover -fstack-protector -Wsign-conversion -Weffc++ # -fsanitize=address -fsanitize=undefined
+DEBUG_FLAGS := -Wall -Wextra -pedantic -Wshadow -Wformat=2 -Wfloat-equal -Wconversion -Wlogical-op -Wshift-overflow=2 -Wduplicated-cond -Wcast-qual -Wcast-align -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -D_FORTIFY_SOURCE=2 -fno-sanitize-recover -fstack-protector -Wsign-conversion -Weffc++ # -fsanitize=address -fsanitize=undefined
 
-CPPFLAGS := $(INC_FLAGS) $(WARNING_FLAGS) -std=c++20
+CPPFLAGS := $(INC_FLAGS) -std=c++20
 # The -MMD and -MP flags together generate Makefiles for us!
 DEPS_DETECTION_FLAGS:=-MMD -MP
+
+ifdef UNIT_TEST
+CPPFLAGS+=-DUNIT_TEST
+endif
+
+ifdef RELEASE
+CPPFLAGS+=-O2
+else
+CPPFLAGS+=$(DEBUG_FLAGS)
+endif
 
 ifndef UNIT_TEST
 CPPFLAGS+=$(DEPS_DETECTION_FLAGS)

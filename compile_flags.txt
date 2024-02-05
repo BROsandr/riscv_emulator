@@ -21,5 +21,6 @@
 -fstack-protector
 -Wsign-conversion
 -Weffc++
+-DUNIT_TEST
 
 -I./inc

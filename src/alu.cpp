@@ -48,8 +48,6 @@ Alu::Alu(Op op, Uxlen a, Uxlen b) {
   this->flag   = out.second;
 }
 
-#define UNIT_TEST
-
 #ifdef UNIT_TEST
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
