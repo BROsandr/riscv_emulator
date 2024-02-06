@@ -1,9 +1,11 @@
-#include "Core.hpp"
+#include "core.hpp"
+#include "alu.hpp"
+#include "decoder.hpp"
 
 void Core::cycle() {
   const Uxlen instruction{fetch_instruction(this->instr_mem)};
 
-  const Decode_stage decode_stage{instruction};
+  const Decoder decoder{instruction};
 
   const Uxlen rd1{this->rf.get(decode_stage.get_ra1())};
   const Uxlen rd2{this->rf.get(decode_stage.get_ra2())};

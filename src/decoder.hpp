@@ -1,3 +1,5 @@
+#pragma once
+
 #include "alu.hpp"
 #include "csr.hpp"
 #include "riscv.hpp"
