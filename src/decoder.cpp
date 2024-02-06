@@ -33,9 +33,10 @@ namespace {
 }
 
 constexpr Decoder::Decoder(Uxlen instruction) {
-  const Opcode opcode{static_cast<Opcode>((instruction >> 2) & 0b11111)};
+  const Opcode opcode{static_cast<Opcode>(extract_bits(instruction, 2, 6))};
 
-  const int funct3{static_cast<int>((instruction >> 12) & 0b111)};
+  const auto funct3{extract_bits(instruction, 12, 14)};
+  const auto funct7{extract_bits(instruction, 25, 31)};
 
   if ((instruction & 0b11) != 0b11) {
     throw Errors::Illegal_instruction{instruction, "(instruction & 0b11) != 0b11"};
@@ -43,8 +44,30 @@ constexpr Decoder::Decoder(Uxlen instruction) {
 
   switch (opcode) {
     case Opcode::op: {
-      int alu_op{};
-      op_opcode(funct7);
-    }
+      if ((((extract_bits(funct7, 6) << 5) | extract_bits(funct7, 0, 4)) == 0) ||
+          (((extract_bits(funct7, 5) == 1) && (funct3 != 0) && (funct3 != 5)) == 0)) {
+        throw Errors::Illegal_instruction{instruction, "illegal funct3 and/or funct7 for Opcode::op"};
+      }
+
+      const Alu::Op alu_op{static_cast<Alu::Op>(
+          (extract_bits(funct7, 5) << 3) | funct3
+      )};
+      Callback::op(alu_op);
+    } break;
+
+    case Opcode::op_imm: {
+      Alu::Op alu_op{};
+      if ((funct3 & 0b11) == 0b01) {
+        alu_op = static_cast<Alu::Op>((extract_bits(funct7, 5) << 3) | funct3);
+        if (((funct3 == 0b101) &
+            (((extract_bits(funct7, 6) << 5) | extract_bits(funct7, 0, 4)) != 0)) |
+            ((funct3 == 0b001) & (funct7 != 0))) {
+          throw Errors::Illegal_instruction{instruction, "illegal funct3 and/or funct7 for Opcode::op_imm"};
+        }
+      } else {
+        alu_op = static_cast<Alu::Op>(funct3);
+      }
+      Callback::op_imm(alu_op);
+    } break;
   }
 }
