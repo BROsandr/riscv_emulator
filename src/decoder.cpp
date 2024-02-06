@@ -2,6 +2,8 @@
 
 #include "exception.hpp"
 
+#include <cassert>
+
 namespace {
   template <typename T>
   constexpr T make_mask(std::size_t len, std::size_t pos = 0) {
@@ -20,6 +22,7 @@ namespace {
 
   template <typename T> requires Right_shiftable<T> && Andable<T>
   constexpr T extract_bits(T data, std::size_t start_pos, std::size_t end_pos) {
+    assert(end_pos >= start_pos);
     return (data >> start_pos) & static_cast<T>(make_mask<unsigned long long>(end_pos-start_pos+1));
   }
 
