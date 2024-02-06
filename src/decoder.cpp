@@ -30,6 +30,14 @@ namespace {
   constexpr T extract_bits(T data, std::size_t pos) {
     return extract_bits(data, pos, pos);
   }
+
+  template <typename T>
+  constexpr T sign_extend(T data, std::size_t sign_pos) {
+    assert(sign_pos < (sizeof(data) * 8));
+
+    T m{1U << (sign_pos-1)};
+    return (data ^ m) - m;
+  }
 }
 
 constexpr Decoder::Decoder(Uxlen instruction) {
