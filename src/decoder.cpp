@@ -69,5 +69,62 @@ constexpr Decoder::Decoder(Uxlen instruction) {
       }
       Callback::op_imm(alu_op);
     } break;
+
+    case Opcode::lui : Callback::op_imm(); break;
+
+    case Opcode::load: {
+      if (((funct3 & 0b11) == 0b11) || funct3 == 6) {
+        throw Errors::Illegal_instruction{instruction, "illegal funct3 for Opcode::load"};
+      }
+      Callback::load(funct3);
+    } break;
+
+    case Opcode::store: {
+      if (funct3 >= 3) {
+        throw Errors::Illegal_instruction{instruction, "illegal funct3 for Opcode::store"};
+      }
+      Callback::store(funct3);
+    } break;
+
+    case Opcode::branch: {
+      if ((funct3 == 2) || (funct3 == 3)) {
+        throw Errors::Illegal_instruction{instruction, "illegal funct3 for Opcode::branch"};
+      }
+      Callback::branch((0b11 << 3) | funct3);
+    } break;
+
+    case Opcode::jal: Callback::jal(); break;
+
+    case Opcode::jalr: {
+      if (funct3 != 0) {
+        throw Errors::Illegal_instruction{instruction, "illegal funct3 for Opcode::jalr"};
+      }
+
+      Callback::jalr();
+    } break;
+
+    case Opcode::auipc: Callback::auipc(); break;
+
+    case Opcode::misc_mem: {
+      if (funct3 != 0) {
+        throw Errors::Illegal_instruction{instruction, "illegal funct3 for Opcode::misc_mem"};
+      }
+    } break;
+
+    case Opcode::system: {
+      bool mret{};
+
+      if (funct3 == 0) {
+        if (extract_bits(instruction, 7, 31) == 0b0011000000100000000000000) {
+          mret = true;
+        } else {
+          throw Errors::Illegal_instruction{instruction, "illegal instr[31:7] for Opcode::system"};
+        }
+      }
+
+      bool csr_we{funct3 != 0};
+      bool gpr_we{funct3 != 0};
+      Callback::system(mret, csr_we, gpr_we);
+    } break;
   }
 }
