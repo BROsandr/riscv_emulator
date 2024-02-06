@@ -20,9 +20,29 @@ class Decoder {
       system   = 0b11100
     };
 
-    struct Callback {
-      static std::function<void(Alu::Op, std::size_t ra1, std::size_t ra2, std::size_t wa)> op;
-    };
+    struct Callbacks {
+      using Op_imm = std::function<void(Alu::Op op         , std::size_t ra1, Uxlen imm_i    , std::size_t wa)>;
+      using Op     = std::function<void(Alu::Op op         , std::size_t ra1, std::size_t ra2, std::size_t wa)>;
+      using Load   = std::function<void(unsigned int funct3, std::size_t ra1, Uxlen imm_i    , std::size_t wa)>;
+      using Store  = std::function<void(unsigned int funct3, std::size_t ra1, Uxlen imm_i                    )>;
+      using Lui    = std::function<void(                                      Uxlen imm_u    , std::size_t wa)>;
+      using Auipc  = std::function<void(                                      Uxlen imm_u    , std::size_t wa)>;
+      using Jalr   = std::function<void(                                                       std::size_t wa)>;
+      using Jal    = std::function<void(                                                                     )>;
+      using Branch = std::function<void(Alu::Op op                                                           )>;
+      using System = std::function<void(bool mret, bool csr_we, bool gpr_we)>                                  ;
+
+      Op_imm op_imm;
+      Op     op;
+      Load   load;
+      Store  store;
+      Lui    lui;
+      Auipc  auipc;
+      Jalr   jalr;
+      Jal    jal;
+      Branch branch;
+      System system;
+    } m_callbacks;
 
     // namespace Callback {
     //   std::function<void(int func7)> op;
@@ -35,7 +55,7 @@ class Decoder {
       imm_s
     };
 
-    constexpr Decoder(Uxlen instruction);
+    Decoder(Callbacks callbacks, Uxlen instruction);
 
     constexpr B_sel   get_b_sel () const;
     constexpr Alu::Op get_alu_op() const;

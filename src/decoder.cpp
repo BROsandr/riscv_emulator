@@ -40,11 +40,12 @@ namespace {
   }
 }
 
-constexpr Decoder::Decoder(Uxlen instruction) : m_instruction{instruction} {
+Decoder::Decoder(Callbacks callbacks, Uxlen instruction)
+    : m_callbacks{callbacks}, m_instruction{instruction} {
   const Opcode opcode{static_cast<Opcode>(extract_bits(instruction, 2, 6))};
 
-  const auto funct3{extract_bits(instruction, 12, 14)};
-  const auto funct7{extract_bits(instruction, 25, 31)};
+  const auto funct3{static_cast<unsigned int>(extract_bits(instruction, 12, 14))};
+  const auto funct7{static_cast<unsigned int>(extract_bits(instruction, 25, 31))};
 
   const std::size_t ra1{extract_bits(instruction, 15, 19)};
   const std::size_t ra2{extract_bits(instruction, 20, 24)};
@@ -64,7 +65,7 @@ constexpr Decoder::Decoder(Uxlen instruction) : m_instruction{instruction} {
       const Alu::Op alu_op{static_cast<Alu::Op>(
           (extract_bits(funct7, 5) << 3) | funct3
       )};
-      Callback::op(alu_op, ra1, ra2, wa);
+      callbacks.op(alu_op, ra1, ra2, wa);
     } break;
 
     case Opcode::op_imm: {
@@ -79,43 +80,43 @@ constexpr Decoder::Decoder(Uxlen instruction) : m_instruction{instruction} {
       } else {
         alu_op = static_cast<Alu::Op>(funct3);
       }
-      Callback::op_imm(alu_op, ra1, get_imm_i(), wa);
+      callbacks.op_imm(alu_op, ra1, get_imm_i(), wa);
     } break;
 
-    case Opcode::lui : Callback::op_imm(get_imm_u(), wa); break;
+    case Opcode::lui : callbacks.lui(get_imm_u(), wa); break;
 
     case Opcode::load: {
       if (((funct3 & 0b11) == 0b11) || funct3 == 6) {
         throw Errors::Illegal_instruction{instruction, "illegal funct3 for Opcode::load"};
       }
-      Callback::load(funct3, get_imm_i(), wa);
+      callbacks.load(funct3, ra1, get_imm_i(), wa);
     } break;
 
     case Opcode::store: {
       if (funct3 >= 3) {
         throw Errors::Illegal_instruction{instruction, "illegal funct3 for Opcode::store"};
       }
-      Callback::store(funct3, get_imm_i());
+      callbacks.store(funct3, ra1, get_imm_i());
     } break;
 
     case Opcode::branch: {
       if ((funct3 == 2) || (funct3 == 3)) {
         throw Errors::Illegal_instruction{instruction, "illegal funct3 for Opcode::branch"};
       }
-      Callback::branch((0b11 << 3) | funct3);
+      callbacks.branch(static_cast<Alu::Op>((0b11 << 3) | funct3));
     } break;
 
-    case Opcode::jal: Callback::jal(); break;
+    case Opcode::jal: callbacks.jal(); break;
 
     case Opcode::jalr: {
       if (funct3 != 0) {
         throw Errors::Illegal_instruction{instruction, "illegal funct3 for Opcode::jalr"};
       }
 
-      Callback::jalr();
+      callbacks.jalr(wa);
     } break;
 
-    case Opcode::auipc: Callback::auipc(); break;
+    case Opcode::auipc: callbacks.auipc(get_imm_u(), wa); break;
 
     case Opcode::misc_mem: {
       if (funct3 != 0) {
@@ -136,7 +137,7 @@ constexpr Decoder::Decoder(Uxlen instruction) : m_instruction{instruction} {
 
       bool csr_we{funct3 != 0};
       bool gpr_we{funct3 != 0};
-      Callback::system(mret, csr_we, gpr_we);
+      callbacks.system(mret, csr_we, gpr_we);
     } break;
   }
 }
