@@ -5,18 +5,22 @@
 class Decoder {
   public:
     enum class Opcode {
-      load_opcode     = 0b00000,
-      misc_mem_opcode = 0b00011,
-      op_imm_opcode   = 0b00100,
-      auipc_opcode    = 0b00101,
-      store_opcode    = 0b01000,
-      op_opcode       = 0b01100,
-      lui_opcode      = 0b01101,
-      branch_opcode   = 0b11000,
-      jalr_opcode     = 0b11001,
-      jal_opcode      = 0b11011,
-      system_opcode   = 0b11100
+      load     = 0b00000,
+      misc_mem = 0b00011,
+      op_imm   = 0b00100,
+      auipc    = 0b00101,
+      store    = 0b01000,
+      op       = 0b01100,
+      lui      = 0b01101,
+      branch   = 0b11000,
+      jalr     = 0b11001,
+      jal      = 0b11011,
+      system   = 0b11100
     };
+
+    // namespace Callback {
+    //   std::function<void(int func7)> op;
+    // }
 
     enum class B_sel {
       rd,

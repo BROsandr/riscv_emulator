@@ -1,3 +1,5 @@
+#include "riscv.hpp"
+
 #include <stdexcept>
 
 namespace Errors {
@@ -10,6 +12,9 @@ namespace Errors {
   };
 
   struct Illegal_instruction : public Error {
-    using Error::Error;
+    const Uxlen m_instruction;
+
+    Illegal_instruction(Uxlen instruction, const std::string &message = "")
+        : Error(std::to_string(instruction) + " : " + message),  m_instruction{instruction} {}
   };
 }
