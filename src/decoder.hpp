@@ -2,6 +2,8 @@
 #include "csr.hpp"
 #include "riscv.hpp"
 
+#include <functional>
+
 class Decoder {
   public:
     enum class Opcode {
@@ -16,6 +18,10 @@ class Decoder {
       jalr     = 0b11001,
       jal      = 0b11011,
       system   = 0b11100
+    };
+
+    struct Callback {
+      static std::function<void(Alu::Op, int ra1, int ra2, int wa)> op;
     };
 
     // namespace Callback {
@@ -35,5 +41,17 @@ class Decoder {
     constexpr Alu::Op get_alu_op() const;
     constexpr Csr::Op get_csr_op() const;
     constexpr bool    get_csr_we() const;
+  private:
+    const Uxlen m_instruction;
+
+    constexpr int func7() const;
+    constexpr int func3() const;
+
+    constexpr Uxlen get_imm_i    () const;
+    constexpr Uxlen get_imm_u    () const;
+    constexpr Uxlen get_imm_s    () const;
+    constexpr Uxlen get_imm_b    () const;
+    constexpr Uxlen get_imm_j    () const;
+    constexpr Uxlen get_imm_zicsr() const;
 
 };

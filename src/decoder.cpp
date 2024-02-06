@@ -40,11 +40,15 @@ namespace {
   }
 }
 
-constexpr Decoder::Decoder(Uxlen instruction) {
+constexpr Decoder::Decoder(Uxlen instruction) : m_instruction{instruction} {
   const Opcode opcode{static_cast<Opcode>(extract_bits(instruction, 2, 6))};
 
   const auto funct3{extract_bits(instruction, 12, 14)};
   const auto funct7{extract_bits(instruction, 25, 31)};
+
+  const int ra1{static_cast<int>(extract_bits(instruction, 15, 19))};
+  const int ra2{static_cast<int>(extract_bits(instruction, 20, 24))};
+  const int wa {static_cast<int>(extract_bits(instruction, 7, 11))};
 
   if ((instruction & 0b11) != 0b11) {
     throw Errors::Illegal_instruction{instruction, "(instruction & 0b11) != 0b11"};
@@ -60,7 +64,7 @@ constexpr Decoder::Decoder(Uxlen instruction) {
       const Alu::Op alu_op{static_cast<Alu::Op>(
           (extract_bits(funct7, 5) << 3) | funct3
       )};
-      Callback::op(alu_op);
+      Callback::op(alu_op, ra1, ra2, wa);
     } break;
 
     case Opcode::op_imm: {
@@ -75,23 +79,23 @@ constexpr Decoder::Decoder(Uxlen instruction) {
       } else {
         alu_op = static_cast<Alu::Op>(funct3);
       }
-      Callback::op_imm(alu_op);
+      Callback::op_imm(alu_op, ra1, get_imm_i(), wa);
     } break;
 
-    case Opcode::lui : Callback::op_imm(); break;
+    case Opcode::lui : Callback::op_imm(get_imm_u(), wa); break;
 
     case Opcode::load: {
       if (((funct3 & 0b11) == 0b11) || funct3 == 6) {
         throw Errors::Illegal_instruction{instruction, "illegal funct3 for Opcode::load"};
       }
-      Callback::load(funct3);
+      Callback::load(funct3, get_imm_i(), wa);
     } break;
 
     case Opcode::store: {
       if (funct3 >= 3) {
         throw Errors::Illegal_instruction{instruction, "illegal funct3 for Opcode::store"};
       }
-      Callback::store(funct3);
+      Callback::store(funct3, get_imm_i());
     } break;
 
     case Opcode::branch: {
@@ -135,4 +139,36 @@ constexpr Decoder::Decoder(Uxlen instruction) {
       Callback::system(mret, csr_we, gpr_we);
     } break;
   }
+}
+
+constexpr int Decoder::func7() const {
+  return 0;
+}
+constexpr int Decoder::func3() const {
+  return 0;
+}
+
+constexpr Uxlen Decoder::get_imm_i    () const {
+  const Uxlen unextended{extract_bits(m_instruction, 20, 31)};
+  return sign_extend(unextended, 12);
+}
+constexpr Uxlen Decoder::get_imm_u    () const {
+  return extract_bits(m_instruction, 12, 31) << 12;
+}
+constexpr Uxlen Decoder::get_imm_s    () const {
+  const Uxlen unextended{(extract_bits(m_instruction, 25, 31) << 5) | extract_bits(m_instruction, 7, 11)};
+  return sign_extend(unextended, 12);
+}
+constexpr Uxlen Decoder::get_imm_b    () const {
+  const Uxlen unextended{(extract_bits(m_instruction, 7) << (5 + 6)) |
+      (extract_bits(m_instruction, 25, 30) << 5) |
+      (extract_bits(m_instruction, 8, 11) << 1)};
+
+  return sign_extend(unextended, 11);
+}
+constexpr Uxlen Decoder::get_imm_j    () const {
+  return 0;
+}
+constexpr Uxlen Decoder::get_imm_zicsr() const {
+  return 0;
 }
