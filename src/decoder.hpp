@@ -21,7 +21,7 @@ class Decoder {
     };
 
     struct Callback {
-      static std::function<void(Alu::Op, int ra1, int ra2, int wa)> op;
+      static std::function<void(Alu::Op, std::size_t ra1, std::size_t ra2, std::size_t wa)> op;
     };
 
     // namespace Callback {

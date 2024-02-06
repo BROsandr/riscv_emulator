@@ -46,9 +46,9 @@ constexpr Decoder::Decoder(Uxlen instruction) : m_instruction{instruction} {
   const auto funct3{extract_bits(instruction, 12, 14)};
   const auto funct7{extract_bits(instruction, 25, 31)};
 
-  const int ra1{static_cast<int>(extract_bits(instruction, 15, 19))};
-  const int ra2{static_cast<int>(extract_bits(instruction, 20, 24))};
-  const int wa {static_cast<int>(extract_bits(instruction, 7, 11))};
+  const std::size_t ra1{extract_bits(instruction, 15, 19)};
+  const std::size_t ra2{extract_bits(instruction, 20, 24)};
+  const std::size_t wa {extract_bits(instruction, 7, 11)};
 
   if ((instruction & 0b11) != 0b11) {
     throw Errors::Illegal_instruction{instruction, "(instruction & 0b11) != 0b11"};
