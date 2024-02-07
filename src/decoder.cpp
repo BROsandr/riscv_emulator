@@ -96,14 +96,14 @@ Decoder::Decoder(Callbacks callbacks, Uxlen instruction)
       if (funct3 >= 3) {
         throw Errors::Illegal_instruction{instruction, "illegal funct3 for Opcode::store"};
       }
-      callbacks.store(funct3, ra1, get_imm_i());
+      callbacks.store(funct3, ra1, ra2, get_imm_i());
     } break;
 
     case Opcode::branch: {
       if ((funct3 == 2) || (funct3 == 3)) {
         throw Errors::Illegal_instruction{instruction, "illegal funct3 for Opcode::branch"};
       }
-      callbacks.branch(static_cast<Alu::Op>((0b11 << 3) | funct3));
+      callbacks.branch(static_cast<Alu::Op>((0b11 << 3) | funct3), ra1, ra2, get_imm_b());
     } break;
 
     case Opcode::jal: callbacks.jal(); break;
@@ -113,7 +113,7 @@ Decoder::Decoder(Callbacks callbacks, Uxlen instruction)
         throw Errors::Illegal_instruction{instruction, "illegal funct3 for Opcode::jalr"};
       }
 
-      callbacks.jalr(wa);
+      callbacks.jalr(ra1, get_imm_j(), wa);
     } break;
 
     case Opcode::auipc: callbacks.auipc(get_imm_u(), wa); break;
@@ -137,7 +137,7 @@ Decoder::Decoder(Callbacks callbacks, Uxlen instruction)
 
       bool csr_we{funct3 != 0};
       bool gpr_we{funct3 != 0};
-      callbacks.system(mret, csr_we, gpr_we);
+      callbacks.system(static_cast<Csr::Op>(funct3), ra1, wa, mret, get_imm_zicsr(), csr_we, gpr_we);
     } break;
   }
 }

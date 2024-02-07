@@ -11,7 +11,9 @@ struct Rf {
   Uxlen write(std::size_t address, Uxlen data);
 };
 
-struct Csr {};
+struct Csr {
+  enum class Op {};
+};
 
 class Core {
   public:

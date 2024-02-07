@@ -26,13 +26,13 @@ class Decoder {
       using Op_imm = std::function<void(Alu::Op op         , std::size_t ra1, Uxlen imm_i    , std::size_t wa)>;
       using Op     = std::function<void(Alu::Op op         , std::size_t ra1, std::size_t ra2, std::size_t wa)>;
       using Load   = std::function<void(unsigned int funct3, std::size_t ra1, Uxlen imm_i    , std::size_t wa)>;
-      using Store  = std::function<void(unsigned int funct3, std::size_t ra1, Uxlen imm_i                    )>;
+      using Store  = std::function<void(unsigned int funct3, std::size_t ra1, std::size_t ra2, Uxlen imm_i   )>;
       using Lui    = std::function<void(                                      Uxlen imm_u    , std::size_t wa)>;
       using Auipc  = std::function<void(                                      Uxlen imm_u    , std::size_t wa)>;
-      using Jalr   = std::function<void(                                                       std::size_t wa)>;
-      using Jal    = std::function<void(                                                                     )>;
-      using Branch = std::function<void(Alu::Op op                                                           )>;
-      using System = std::function<void(bool mret, bool csr_we, bool gpr_we)>                                  ;
+      using Jalr   = std::function<void(                     std::size_t ra1, Uxlen imm_j    , std::size_t wa)>;
+      using Jal    = std::function<void(                                      Uxlen imm_j    , std::size_t wa)>;
+      using Branch = std::function<void(Alu::Op op         , std::size_t ra1, std::size_t ra2, Uxlen imm_b   )>;
+      using System = std::function<void(Csr::Op op         , std::size_t ra1, std::size_t wa, Uxlen imm_zicsr, bool mret, bool csr_we, bool gpr_we)>;
 
       Op_imm op_imm;
       Op     op;
