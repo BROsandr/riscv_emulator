@@ -1,8 +1,17 @@
 #pragma once
 
+#include "riscv.hpp"
+
 #include <functional>
 
 class Memory;
+
+struct Rf {
+  Uxlen read(std::size_t address);
+  Uxlen write(std::size_t address, Uxlen data);
+};
+
+struct Csr {};
 
 class Core {
   public:
@@ -24,4 +33,7 @@ class Core {
     Memory &data_mem;
     Rf rf{};
     Csr csr{};
+    Uxlen pc{0};
+
+    void increment_pc();
 };
