@@ -13,7 +13,7 @@ namespace {
           : m_msb{msb}, m_lsb{lsb}, m_width{msb - lsb + 1} {
         assert(msb >= lsb);
       }
-      constexpr Bit_range(std::size_t pos)
+      explicit constexpr Bit_range(std::size_t pos)
           : Bit_range(pos, pos) {}
 
       constexpr std::size_t get_msb()   const {return m_msb;}
