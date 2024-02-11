@@ -3,6 +3,7 @@
 #include "exception.hpp"
 
 #include <cassert>
+#include <climits>
 
 #include <iostream>
 
@@ -56,6 +57,7 @@ namespace {
 
   template <typename T> requires Right_shiftable<T> && Andable<T>
   constexpr T extract_bits(T data, Bit_range range) {
+    assert(range.get_msb() < (sizeof(T) * CHAR_BIT));
     return (data >> range.get_lsb()) & static_cast<T>(make_mask<unsigned long long>(range.get_width()));
   }
 
