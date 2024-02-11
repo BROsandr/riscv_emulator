@@ -1,13 +1,92 @@
 #pragma once
 
-#include "alu.hpp"
-#include "csr.hpp"
 #include "riscv.hpp"
 
-#include <functional>
+#include <bitset>
 
 class Decoder {
   public:
+    enum Isa_extension {
+      isa_m,
+      isa_zicsr,
+      isa_number_
+    };
+
+    using Isa_extensions = std::bitset<static_cast<std::size_t>(Isa_extension::isa_number_)>;
+
+    enum class Instruction_type {
+      r,
+      i,
+      s,
+      u
+    };
+
+    enum Concrete_instruction {
+      instr_lui   ,
+      instr_auipc ,
+      instr_jal   ,
+      instr_jalr  ,
+      instr_beq   ,
+      instr_bne   ,
+      instr_blt   ,
+      instr_bge   ,
+      instr_bltu  ,
+      instr_bgeu  ,
+      instr_lb    ,
+      instr_lh    ,
+      instr_lw    ,
+      instr_lbu   ,
+      instr_lhu   ,
+      instr_sb    ,
+      instr_sh    ,
+      instr_sw    ,
+      instr_addi  ,
+      instr_slti  ,
+      instr_sltiu ,
+      instr_xori  ,
+      instr_ori   ,
+      instr_andi  ,
+      instr_slli  ,
+      instr_srli  ,
+      instr_srai  ,
+      instr_add   ,
+      instr_sub   ,
+      instr_sll   ,
+      instr_slt   ,
+      instr_sltu  ,
+      instr_xor   ,
+      instr_srl   ,
+      instr_sra   ,
+      instr_or    ,
+      instr_and   ,
+      instr_fence ,
+      instr_mret  ,
+      instr_csrrw ,
+      instr_csrrs ,
+      instr_csrrc ,
+      instr_csrrwi,
+      instr_csrrsi,
+      instr_csrrci,
+    };
+
+    struct Instruction_info {
+      std::size_t          rs1        {};
+      std::size_t          rs2        {};
+      std::size_t          rs3        {};
+      Imm                  imm        {};
+      std::size_t          rd         {};
+      Concrete_instruction instruction{};
+      Instruction_type     type       {};
+    };
+
+    constexpr Decoder(Isa_extensions extensions) : isa_extensions{extensions} {};
+    constexpr Instruction_info decode(Uxlen instruction);
+
+  private:
+    const Isa_extensions isa_extensions;
+
+    constexpr Concrete_instruction decode_concrete_instruction(Uxlen instruction);
+
     enum class Opcode {
       load     = 0b00000,
       misc_mem = 0b00011,
@@ -21,59 +100,5 @@ class Decoder {
       jal      = 0b11011,
       system   = 0b11100
     };
-
-    struct Callbacks {
-      using Op_imm = std::function<void(Alu::Op op         , std::size_t ra1, Uxlen imm_i    , std::size_t wa)>;
-      using Op     = std::function<void(Alu::Op op         , std::size_t ra1, std::size_t ra2, std::size_t wa)>;
-      using Load   = std::function<void(unsigned int funct3, std::size_t ra1, Uxlen imm_i    , std::size_t wa)>;
-      using Store  = std::function<void(unsigned int funct3, std::size_t ra1, std::size_t ra2, Uxlen imm_i   )>;
-      using Lui    = std::function<void(                                      Uxlen imm_u    , std::size_t wa)>;
-      using Auipc  = std::function<void(                                      Uxlen imm_u    , std::size_t wa)>;
-      using Jalr   = std::function<void(                     std::size_t ra1, Uxlen imm_j    , std::size_t wa)>;
-      using Jal    = std::function<void(                                      Uxlen imm_j    , std::size_t wa)>;
-      using Branch = std::function<void(Alu::Op op         , std::size_t ra1, std::size_t ra2, Uxlen imm_b   )>;
-      using System = std::function<void(Csr::Op op         , std::size_t ra1, std::size_t wa, Uxlen imm_zicsr, bool mret, bool csr_we, bool gpr_we)>;
-
-      Op_imm op_imm;
-      Op     op;
-      Load   load;
-      Store  store;
-      Lui    lui;
-      Auipc  auipc;
-      Jalr   jalr;
-      Jal    jal;
-      Branch branch;
-      System system;
-    } m_callbacks;
-
-    // namespace Callback {
-    //   std::function<void(int func7)> op;
-    // }
-
-    enum class B_sel {
-      rd,
-      imm_i,
-      imm_u,
-      imm_s
-    };
-
-    Decoder(Callbacks callbacks, Uxlen instruction);
-
-    constexpr B_sel   get_b_sel () const;
-    constexpr Alu::Op get_alu_op() const;
-    constexpr Csr::Op get_csr_op() const;
-    constexpr bool    get_csr_we() const;
-  private:
-    const Uxlen m_instruction;
-
-    constexpr int func7() const;
-    constexpr int func3() const;
-
-    constexpr Uxlen get_imm_i    () const;
-    constexpr Uxlen get_imm_u    () const;
-    constexpr Uxlen get_imm_s    () const;
-    constexpr Uxlen get_imm_b    () const;
-    constexpr Uxlen get_imm_j    () const;
-    constexpr Uxlen get_imm_zicsr() const;
 
 };

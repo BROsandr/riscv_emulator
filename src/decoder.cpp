@@ -78,6 +78,130 @@ namespace {
     T m{1U << (sign_pos-1)};
     return (data ^ m) - m;
   }
+
+  constexpr unsigned int get_funct3(Uxlen instruction) {
+    return extract_bits(instruction, {14, 12});
+  }
+
+  constexpr unsigned int get_funct7(Uxlen instruction) {
+    return extract_bits(instruction, {31, 25});
+  }
+}
+
+constexpr Decoder::Concrete_instruction Decoder::decode_concrete_instruction(Uxlen instruction) {
+  if ((instruction & 0b11) != 0b11) {
+    throw Errors::Illegal_instruction{instruction, "(instruction & 0b11) != 0b11"};
+  }
+
+  const Opcode opcode{static_cast<Opcode>(extract_bits(instruction, {6, 2}))};
+
+  // using enum Decoder::Concrete_instruction
+
+  switch (opcode) {
+    case Opcode::load:
+      switch (get_funct3(instruction)) {
+        case 0: return Concrete_instruction::instr_lb;
+        case 1: return Concrete_instruction::instr_lh;
+        case 2: return Concrete_instruction::instr_lw;
+        case 4: return Concrete_instruction::instr_lbu;
+        case 5: return Concrete_instruction::instr_lhu;
+      }
+      break;
+    case Opcode::op_imm:
+      switch (get_funct3(instruction)) {
+        case 0: return Concrete_instruction::instr_addi;
+        case 1: return Concrete_instruction::instr_slli;
+        case 2: return Concrete_instruction::instr_slti;
+        case 3: return Concrete_instruction::instr_sltiu;
+        case 4: return Concrete_instruction::instr_xori;
+        case 5:
+          switch (get_funct7(instruction)) {
+            case 0        : return Concrete_instruction::instr_srli;
+            case 0b0100000: return Concrete_instruction::instr_srai;
+          }
+          break;
+        case 6: return Concrete_instruction::instr_ori;
+        case 7: return Concrete_instruction::instr_addi;
+      }
+      break;
+    case Opcode::auipc:
+      return Concrete_instruction::instr_auipc;
+      break;
+    case Opcode::store:
+      switch (get_funct3(instruction)) {
+        case 0: return Concrete_instruction::instr_sb;
+        case 1: return Concrete_instruction::instr_sh;
+        case 2: return Concrete_instruction::instr_sw;
+      }
+      break;
+    case Opcode::op:
+      switch (get_funct3(instruction)) {
+        case 0:
+          switch (get_funct7(instruction)) {
+            case 0        : return Concrete_instruction::instr_add;
+            case 0b0100000: return Concrete_instruction::instr_sub;
+          }
+          break;
+        case 1: return Concrete_instruction::instr_sll;
+        case 2: return Concrete_instruction::instr_slt;
+        case 3: return Concrete_instruction::instr_sltu;
+        case 4: return Concrete_instruction::instr_xor;
+        case 5:
+          switch (get_funct7(instruction)) {
+            case 0        : return Concrete_instruction::instr_srl;
+            case 0b0100000: return Concrete_instruction::instr_sra;
+          }
+          break;
+        case 6: return Concrete_instruction::instr_or;
+        case 7: return Concrete_instruction::instr_and;
+      }
+      break;
+    case Opcode::lui:
+      return Concrete_instruction::instr_lui;
+      break;
+    case Opcode::branch:
+      switch (get_funct3(instruction)) {
+        case 0: return Concrete_instruction::instr_beq;
+        case 1: return Concrete_instruction::instr_bne;
+        case 4: return Concrete_instruction::instr_blt;
+        case 5: return Concrete_instruction::instr_bge;
+        case 6: return Concrete_instruction::instr_bltu;
+        case 7: return Concrete_instruction::instr_bgeu;
+      }
+      break;
+    case Opcode::jalr:
+      if(get_funct3(instruction) == 0) return Concrete_instruction::instr_jalr;
+      break;
+    case Opcode::jal:
+      return Concrete_instruction::instr_jal;
+      break;
+    case Opcode::misc_mem:
+      if (get_funct3(instruction) == 0) return Concrete_instruction::instr_fence;
+      break;
+    case Opcode::system:
+      switch (get_funct3(instruction)) {
+        case 0:
+          if (extract_bits(instruction, {31, 7}) == 0b0011000000100000000000000) {
+            return Concrete_instruction::instr_mret;
+          }
+          break;
+        case 1:
+          if (isa_extensions[Isa_extension::isa_zicsr]) {
+          }
+      }
+
+  }
+
+  throw Errors::Illegal_instruction{instruction};
+}
+
+constexpr Decoder::Instruction_info Decoder::decode(Uxlen instruction) {
+  Instruction_info info{};
+
+  info.instruction = decode_concrete_instruction(instruction);
+  decode_instruction_type(info);
+
+  return info;
 }
 
 Decoder::Decoder(Callbacks callbacks, Uxlen instruction)
