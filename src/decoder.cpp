@@ -30,9 +30,9 @@ namespace {
       }
 
     private:
-      std::size_t m_msb;
-      std::size_t m_lsb;
-      std::size_t m_width;
+      const std::size_t m_msb;
+      const std::size_t m_lsb;
+      const std::size_t m_width;
   };
 
   constexpr bool is_overlapping(const Bit_range& lhs, const Bit_range& rhs) {
