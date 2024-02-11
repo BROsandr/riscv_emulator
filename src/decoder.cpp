@@ -4,7 +4,41 @@
 
 #include <cassert>
 
+#include <iostream>
+
 namespace {
+  class Bit_range {
+    public:
+      constexpr Bit_range(std::size_t msb, std::size_t lsb)
+          : m_msb{msb}, m_lsb{lsb}, m_width{msb - lsb + 1} {
+        assert(msb >= lsb);
+      }
+      constexpr Bit_range(std::size_t pos)
+          : Bit_range(pos, pos) {}
+
+      constexpr std::size_t get_msb()   const {return m_msb;}
+      constexpr std::size_t get_lsb()   const {return m_lsb;}
+      constexpr std::size_t get_width() const {return m_width;}
+
+      constexpr bool is_overlapping(const Bit_range& rhs) const {
+        return get_lsb() <= rhs.get_msb() && rhs.get_lsb() <= get_msb();
+      }
+
+      friend std::ostream& operator<<(std::ostream& os, const Bit_range& range) {
+          os << "{" << range.get_msb() << "," << range.get_lsb() << "}";
+          return os;
+      }
+
+    private:
+      std::size_t m_msb;
+      std::size_t m_lsb;
+      std::size_t m_width;
+  };
+
+  constexpr bool is_overlapping(const Bit_range& lhs, const Bit_range& rhs) {
+    return lhs.get_lsb() <= rhs.get_msb() && rhs.get_lsb() <= lhs.get_msb();
+  }
+
   template <typename T>
   constexpr T make_mask(std::size_t len, std::size_t pos = 0) {
     return ((static_cast<T>(1) << len)-1) << pos;
@@ -21,14 +55,18 @@ namespace {
   };
 
   template <typename T> requires Right_shiftable<T> && Andable<T>
-  constexpr T extract_bits(T data, std::size_t start_pos, std::size_t end_pos) {
-    assert(end_pos >= start_pos);
-    return (data >> start_pos) & static_cast<T>(make_mask<unsigned long long>(end_pos-start_pos+1));
+  constexpr T extract_bits(T data, Bit_range range) {
+    return (data >> range.get_lsb()) & static_cast<T>(make_mask<unsigned long long>(range.get_width()));
   }
 
   template <typename T> requires Right_shiftable<T> && Andable<T>
   constexpr T extract_bits(T data, std::size_t pos) {
-    return extract_bits(data, pos, pos);
+    return extract_bits(data, {pos, pos});
+  }
+
+  template <typename T, typename ...Q>
+  constexpr T extract_bits(T data, Bit_range lsb_bit_range, Q ...msb_bit_ranges) {
+    return (extract_bits(data, msb_bit_ranges...) << lsb_bit_range.get_width()) | extract_bits(data, lsb_bit_range);
   }
 
   template <typename T>
