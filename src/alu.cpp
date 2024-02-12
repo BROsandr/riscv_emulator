@@ -251,8 +251,46 @@ TEST_CASE("Alu_SLTS", "[SLTS]") {
     REQUIRE(result == 1);
     REQUIRE(flag   == 0);
   }
+  SECTION("-2 < 1") {
+    auto [result, flag] = calculate(Alu::Op::SLTS, -2u, 1u);
+    REQUIRE(result == 1);
+    REQUIRE(flag   == 0);
+  }
   SECTION("-1 < -2") {
     auto [result, flag] = calculate(Alu::Op::SLTS, -1u, -2u);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == 0);
+  }
+}
+
+TEST_CASE("Alu_SLTU", "[SLTU]") {
+  SECTION("1 < 0") {
+    auto [result, flag] = calculate(Alu::Op::SLTU, 1, 0);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == 0);
+  }
+  SECTION("0 < 1") {
+    auto [result, flag] = calculate(Alu::Op::SLTU, 0, 1);
+    REQUIRE(result == 1);
+    REQUIRE(flag   == 0);
+  }
+  SECTION("0 < 0") {
+    auto [result, flag] = calculate(Alu::Op::SLTU, 0, 0);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == 0);
+  }
+  SECTION("-2 < -1") {
+    auto [result, flag] = calculate(Alu::Op::SLTU, -2u, -1u);
+    REQUIRE(result == 1);
+    REQUIRE(flag   == 0);
+  }
+  SECTION("-2 < 1") {
+    auto [result, flag] = calculate(Alu::Op::SLTU, -2u, 1u);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == 0);
+  }
+  SECTION("-1 < -2") {
+    auto [result, flag] = calculate(Alu::Op::SLTU, -1u, -2u);
     REQUIRE(result == 0);
     REQUIRE(flag   == 0);
   }
@@ -276,6 +314,11 @@ TEST_CASE("Alu_LTS", "[LTS]") {
   }
   SECTION("-2 < -1") {
     auto [result, flag] = calculate(Alu::Op::LTS, -2u, -1u);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == true);
+  }
+  SECTION("-2 < 1") {
+    auto [result, flag] = calculate(Alu::Op::LTS, -2u, 1u);
     REQUIRE(result == 0);
     REQUIRE(flag   == true);
   }
@@ -307,6 +350,11 @@ TEST_CASE("Alu_LTU", "[LTU]") {
     REQUIRE(result == 0);
     REQUIRE(flag   == true);
   }
+  SECTION("-2 < 1") {
+    auto [result, flag] = calculate(Alu::Op::LTU, -2u, 1u);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == false);
+  }
   SECTION("-1 < -2") {
     auto [result, flag] = calculate(Alu::Op::LTU, -1u, -2u);
     REQUIRE(result == 0);
@@ -332,6 +380,11 @@ TEST_CASE("Alu_GES", "[GES]") {
   }
   SECTION("-2 >= -1") {
     auto [result, flag] = calculate(Alu::Op::GES, -2u, -1u);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == false);
+  }
+  SECTION("-2 >= 1") {
+    auto [result, flag] = calculate(Alu::Op::GES, -2u, 1u);
     REQUIRE(result == 0);
     REQUIRE(flag   == false);
   }
@@ -362,6 +415,11 @@ TEST_CASE("Alu_GEU", "[GEU]") {
     auto [result, flag] = calculate(Alu::Op::GEU, -2u, -1u);
     REQUIRE(result == 0);
     REQUIRE(flag   == false);
+  }
+  SECTION("-2 >= 1") {
+    auto [result, flag] = calculate(Alu::Op::GEU, -2u, 1u);
+    REQUIRE(result == 0);
+    REQUIRE(flag   == true);
   }
   SECTION("-1 >= -2") {
     auto [result, flag] = calculate(Alu::Op::GEU, -1u, -2u);
