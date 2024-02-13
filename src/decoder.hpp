@@ -17,7 +17,11 @@ class Decoder {
       r,
       i,
       s,
-      u
+      u,
+      uj,
+      sb,
+      i_sh5,
+      none
     };
 
     enum Concrete_instruction {

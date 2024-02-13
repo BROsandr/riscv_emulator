@@ -95,6 +95,71 @@ namespace {
       default: assert((void("Unknown isa_extension" + std::to_string(extension)), 0));
     }
   }
+
+  Decoder::Instruction_type concrete2type(Decoder::Concrete_instruction instruction) {
+    using enum Decoder::Concrete_instruction;
+    using enum Decoder::Instruction_type;
+    switch (instruction) {
+      case instr_lui   :
+      case instr_auipc : return u;
+
+      case instr_jal   : return uj;
+
+      case instr_jalr  :
+      case instr_lb    :
+      case instr_lh    :
+      case instr_lw    :
+      case instr_lbu   :
+      case instr_lhu   :
+      case instr_addi  :
+      case instr_slti  :
+      case instr_sltiu :
+      case instr_xori  :
+      case instr_ori   :
+      case instr_andi  :
+      case instr_csrrw :
+      case instr_csrrs :
+      case instr_csrrc :
+      case instr_csrrwi:
+      case instr_csrrsi:
+      case instr_csrrci: return i;
+
+      case instr_beq   :
+      case instr_bne   :
+      case instr_blt   :
+      case instr_bge   :
+      case instr_bltu  :
+      case instr_bgeu  : return sb;
+
+      case instr_sb    :
+      case instr_sh    :
+      case instr_sw    : return s;
+
+      case instr_slli  :
+      case instr_srli  :
+      case instr_srai  : return i_sh5;
+
+      case instr_add   :
+      case instr_sub   :
+      case instr_sll   :
+      case instr_slt   :
+      case instr_sltu  :
+      case instr_xor   :
+      case instr_srl   :
+      case instr_sra   :
+      case instr_or    :
+      case instr_and   : return r;
+
+      case instr_fence :
+      case instr_mret  : return none;
+    }
+
+    assert((void("Unknown instruction" + std::to_string(instruction)),0));
+  }
+
+  void decode_instruction_type(Decoder::Instruction_info &info) {
+
+  }
 }
 
 constexpr Decoder::Concrete_instruction Decoder::decode_concrete_instruction(Uxlen instruction) {
