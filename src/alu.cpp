@@ -1,6 +1,7 @@
 #include "alu.hpp"
 
-#include "exception.hpp"
+#include <string>
+#include <cassert>
 
 namespace {
   using enum Alu::Op;
@@ -31,10 +32,7 @@ namespace {
         case GEU : flag   = a >= b                               ; break;
         case EQ  : flag   = a == b                               ; break;
         case NE  : flag   = a != b                               ; break;
-        default  :
-          throw Errors::Unknown_alu_op{
-              std::to_string(static_cast<std::underlying_type_t<typename Alu::Op>>(op))
-          };
+        default  : assert((void("Unknown_alu_op " + std::to_string(op)), 0));
       }
 
       return {result, flag};

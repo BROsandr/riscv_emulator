@@ -7,10 +7,6 @@ namespace Errors {
     using std::runtime_error::runtime_error;
   };
 
-  struct Unknown_alu_op : public Error {
-    using Error::Error;
-  };
-
   struct Illegal_instruction : public Error {
     const Uxlen m_instruction;
 
