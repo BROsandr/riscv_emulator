@@ -88,7 +88,7 @@ namespace {
     return extract_bits(instruction, {31, 25});
   }
 
-  std::string to_string(Decoder::Isa_extension extension) {
+  constexpr std::string to_string(Decoder::Isa_extension extension) {
     using enum Decoder::Isa_extension;
     switch (extension) {
       case isa_zicsr: return "Zicsr";
@@ -96,7 +96,7 @@ namespace {
     }
   }
 
-  Decoder::Instruction_type concrete2type(Decoder::Concrete_instruction instruction) {
+  constexpr Decoder::Instruction_type concrete2type(Decoder::Concrete_instruction instruction) {
     using enum Decoder::Concrete_instruction;
     using enum Decoder::Instruction_type;
     switch (instruction) {
@@ -157,8 +157,7 @@ namespace {
     assert((void("Unknown instruction" + std::to_string(instruction)),0));
   }
 
-  void decode_instruction_type(Decoder::Instruction_info &info) {
-
+  constexpr void decode_instruction_type(Decoder::Instruction_info &info) {
   }
 }
 
