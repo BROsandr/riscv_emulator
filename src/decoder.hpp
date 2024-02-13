@@ -7,7 +7,6 @@
 class Decoder {
   public:
     enum Isa_extension {
-      isa_m,
       isa_zicsr,
       isa_number_
     };
