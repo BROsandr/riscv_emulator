@@ -67,7 +67,10 @@ namespace {
     return extract_bits(data, {pos, pos});
   }
 
-  template <typename T, typename ...Q>
+  template<typename T, typename ... U>
+  concept Are_all_of = (std::same_as<T, U> && ...);
+
+  template <typename T, typename ...Q> requires Are_all_of<Bit_range, Q...>
   constexpr T extract_bits(T data, Bit_range lsb_bit_range, Q ...msb_bit_ranges) {
     return (extract_bits(data, msb_bit_ranges...) << lsb_bit_range.get_width()) | extract_bits(data, lsb_bit_range);
   }
