@@ -6,6 +6,7 @@
 #include <climits>
 
 #include <iostream>
+#include <optional>
 
 namespace {
   class Bit_range {
@@ -86,6 +87,14 @@ namespace {
   constexpr unsigned int get_funct7(Uxlen instruction) {
     return extract_bits(instruction, {31, 25});
   }
+
+  std::string to_string(Decoder::Isa_extension extension) {
+    using enum Decoder::Isa_extension;
+    switch (extension) {
+      case isa_zicsr: return "Zicsr";
+      default: assert((void("Unknown isa_extension" + std::to_string(extension)), 0));
+    }
+  }
 }
 
 constexpr Decoder::Concrete_instruction Decoder::decode_concrete_instruction(Uxlen instruction) {
@@ -96,6 +105,8 @@ constexpr Decoder::Concrete_instruction Decoder::decode_concrete_instruction(Uxl
   const Opcode opcode{static_cast<Opcode>(extract_bits(instruction, {6, 2}))};
 
   // using enum Decoder::Concrete_instruction
+
+  std::optional<Isa_extension> missing_extension{};
 
   switch (opcode) {
     case Opcode::load:
@@ -179,20 +190,35 @@ constexpr Decoder::Concrete_instruction Decoder::decode_concrete_instruction(Uxl
       if (get_funct3(instruction) == 0) return Concrete_instruction::instr_fence;
       break;
     case Opcode::system:
-      switch (get_funct3(instruction)) {
+      switch (const auto funct3 = get_funct3(instruction)) {
         case 0:
           if (extract_bits(instruction, {31, 7}) == 0b0011000000100000000000000) {
             return Concrete_instruction::instr_mret;
           }
           break;
-        case 1:
+        case 4: break;
+        default: // the rest are csr
           if (isa_extensions[Isa_extension::isa_zicsr]) {
+            switch(funct3) {
+              case 1: return Concrete_instruction::instr_csrrw;
+              case 2: return Concrete_instruction::instr_csrrs;
+              case 3: return Concrete_instruction::instr_csrrc;
+              case 5: return Concrete_instruction::instr_csrrwi;
+              case 6: return Concrete_instruction::instr_csrrsi;
+              case 7: return Concrete_instruction::instr_csrrci;
+            }
+          } else {
+            missing_extension = Isa_extension::isa_zicsr;
           }
+          break;
       }
-
   }
 
-  throw Errors::Illegal_instruction{instruction};
+  if (missing_extension) {
+    throw Errors::Illegal_instruction{instruction, "From extension " + to_string(*missing_extension)};
+  } else {
+    throw Errors::Illegal_instruction{instruction};
+  }
 }
 
 constexpr Decoder::Instruction_info Decoder::decode(Uxlen instruction) {
