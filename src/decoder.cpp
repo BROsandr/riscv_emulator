@@ -91,6 +91,26 @@ namespace {
     return extract_bits(instruction, {31, 25});
   }
 
+  constexpr std::size_t get_rd(Uxlen instruction) {
+    return extract_bits(instruction, {11, 7});
+  }
+
+  constexpr std::size_t get_rs1(Uxlen instruction) {
+    return extract_bits(instruction, {19, 15});
+  }
+
+  constexpr std::size_t get_imm20(Uxlen instruction) {
+    return extract_bits(instruction, {31, 12});
+  }
+
+  constexpr std::size_t get_jimm20(Uxlen instruction) {
+    return extract_bits(instruction, Bit_range{19, 12}, Bit_range{11}, Bit_range{10, 1}, Bit_range{20});
+  }
+
+  constexpr std::size_t get_imm12(Uxlen instruction) {
+    return extract_bits(instruction, {31, 20});
+  }
+
   constexpr std::string to_string(Decoder::Isa_extension extension) {
     using enum Decoder::Isa_extension;
     switch (extension) {
@@ -160,7 +180,35 @@ namespace {
     assert((void("Unknown instruction" + std::to_string(instruction)),0));
   }
 
+  constexpr void decode_i   (Decoder::Instruction_info info, Uxlen instr) {
+    info.rd = 
+  }
+  constexpr void decode_sh5 (Decoder::Instruction_info info, Uxlen instr) {
+  }
+  constexpr void decode_r   (Decoder::Instruction_info info, Uxlen instr) {
+  }
+  constexpr void decode_s   (Decoder::Instruction_info info, Uxlen instr) {
+  }
+  constexpr void decode_u   (Decoder::Instruction_info info, Uxlen instr) {
+  }
+  constexpr void decode_uj  (Decoder::Instruction_info info, Uxlen instr) {
+  }
+  constexpr void decode_sb  (Decoder::Instruction_info info, Uxlen instr) {
+  }
+
   constexpr void decode_instruction_type(Decoder::Instruction_info &info) {
+    info.type = concrete2type(info.instruction);
+    using enum Decoder::Instruction_type;
+    switch (info.type) {
+      case none :                    break;
+      case i    : decode_i   (info); break;
+      case i_sh5: decode_sh5 (info); break;
+      case r    : decode_r   (info); break;
+      case s    : decode_s   (info); break;
+      case u    : decode_u   (info); break;
+      case uj   : decode_uj  (info); break;
+      case sb   : decode_sb  (info); break;
+    }
   }
 }
 
