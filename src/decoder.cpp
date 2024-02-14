@@ -101,11 +101,11 @@ namespace {
   }
 
   constexpr unsigned int get_funct3(Uxlen instruction) {
-    return extract_bits(instruction, {14, 12});
+    return static_cast<unsigned int>(extract_bits(instruction, {14, 12}));
   }
 
   constexpr unsigned int get_funct7(Uxlen instruction) {
-    return extract_bits(instruction, {31, 25});
+    return static_cast<unsigned int>(extract_bits(instruction, {31, 25}));
   }
 
   constexpr std::size_t get_rd(Uxlen instruction) {
