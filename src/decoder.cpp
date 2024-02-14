@@ -398,3 +398,14 @@ constexpr Decoder::Instruction_info Decoder::decode(Uxlen instruction) {
 
   return info;
 }
+
+#ifdef UNIT_TEST
+#define CATCH_CONFIG_MAIN
+#include <catch.hpp>
+
+TEST_CASE("Decoder add", "[ADD]") {
+  Decoder decoder{0};
+  SECTION("add x1, x2, x3") {
+    Decoder::Instruction_info info{decoder.decode(0x003100b3)};
+  }
+#endif
