@@ -52,7 +52,7 @@ constexpr Alu::Alu(Op op, Uxlen a, Uxlen b) {
 
 #ifdef UNIT_TEST
 #define CATCH_CONFIG_MAIN
-#include "catch.hpp"
+#include <catch.hpp>
 
 #include <limits>
 
