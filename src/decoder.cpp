@@ -116,16 +116,32 @@ namespace {
     return extract_bits(instruction, {19, 15});
   }
 
-  constexpr std::size_t get_imm20(Uxlen instruction) {
+  constexpr std::size_t get_rs2(Uxlen instruction) {
+    return extract_bits(instruction, {24, 20});
+  }
+
+  constexpr Uxlen get_imm20(Uxlen instruction) {
     return extract_bits(instruction, {31, 12});
   }
 
-  constexpr std::size_t get_jimm20(Uxlen instruction) {
-    return extract_bits(instruction, Bit_range{19, 12}, Bit_range{11}, Bit_range{10, 1}, Bit_range{20});
+  constexpr Uxlen get_jimm20(Uxlen instruction) {
+    return extract_bits(instruction, {20, {10, 1}, 11, {19, 12}});
   }
 
-  constexpr std::size_t get_imm12(Uxlen instruction) {
+  constexpr Uxlen get_imm12(Uxlen instruction) {
     return extract_bits(instruction, {31, 20});
+  }
+
+  constexpr Uxlen get_shamt5(Uxlen instruction) {
+    return extract_bits(instruction, {24, 20});
+  }
+
+  constexpr Uxlen get_simm12(Uxlen instruction) {
+    return extract_bits(instruction, {{11, 5}, {4, 0}}, true);
+  }
+
+  constexpr Uxlen get_sbimm12(Uxlen instruction) {
+    return extract_bits(instruction, {12, {10, 5}, {4, 1}, 11}, true);
   }
 
   constexpr std::string to_string(Decoder::Isa_extension extension) {
@@ -198,33 +214,54 @@ namespace {
   }
 
   constexpr void decode_i   (Decoder::Instruction_info info, Uxlen instr) {
-    info.rd = 
+    info.rd  = get_rd(instr);
+    info.rs1 = get_rs1(instr);
+    info.imm = get_imm12(instr);
   }
-  constexpr void decode_sh5 (Decoder::Instruction_info info, Uxlen instr) {
+  constexpr void decode_i_sh5(Decoder::Instruction_info info, Uxlen instr) {
+    info.rd  = get_rd(instr);
+    info.rs1 = get_rs1(instr);
+    info.imm = get_shamt5(instr);
   }
-  constexpr void decode_r   (Decoder::Instruction_info info, Uxlen instr) {
+  constexpr void decode_r    (Decoder::Instruction_info info, Uxlen instr) {
+    info.rd  = get_rd(instr);
+    info.rs1 = get_rs1(instr);
+    info.rs2 = get_rs2(instr);
   }
-  constexpr void decode_s   (Decoder::Instruction_info info, Uxlen instr) {
+  constexpr void decode_s    (Decoder::Instruction_info info, Uxlen instr) {
+    info.rs1 = get_rs1(instr);
+    info.rs2 = get_rs2(instr);
+    info.imm = get_simm12(instr);
   }
-  constexpr void decode_u   (Decoder::Instruction_info info, Uxlen instr) {
+  constexpr void decode_u    (Decoder::Instruction_info info, Uxlen instr) {
+    info.rd  = get_rd(instr);
+    info.rs1 = get_rs1(instr);
+    info.imm = get_imm20(instr);
   }
-  constexpr void decode_uj  (Decoder::Instruction_info info, Uxlen instr) {
+  constexpr void decode_uj   (Decoder::Instruction_info info, Uxlen instr) {
+    info.rd  = get_rd(instr);
+    info.rs1 = get_rs1(instr);
+    info.imm = get_jimm20(instr);
   }
-  constexpr void decode_sb  (Decoder::Instruction_info info, Uxlen instr) {
+  constexpr void decode_sb   (Decoder::Instruction_info info, Uxlen instr) {
+    info.rs1 = get_rs1(instr);
+    info.rs2 = get_rs2(instr);
+    info.imm = get_sbimm12(instr);
   }
 
-  constexpr void decode_instruction_type(Decoder::Instruction_info &info) {
+  constexpr void decode_instruction_type(Decoder::Instruction_info &info, Uxlen instruction) {
     info.type = concrete2type(info.instruction);
     using enum Decoder::Instruction_type;
     switch (info.type) {
-      case none :                    break;
-      case i    : decode_i   (info); break;
-      case i_sh5: decode_sh5 (info); break;
-      case r    : decode_r   (info); break;
-      case s    : decode_s   (info); break;
-      case u    : decode_u   (info); break;
-      case uj   : decode_uj  (info); break;
-      case sb   : decode_sb  (info); break;
+      case none :                     break;
+      case i    : decode_i    (info, instruction); break;
+      case i_sh5: decode_i_sh5(info, instruction); break;
+      case r    : decode_r    (info, instruction); break;
+      case s    : decode_s    (info, instruction); break;
+      case u    : decode_u    (info, instruction); break;
+      case uj   : decode_uj   (info, instruction); break;
+      case sb   : decode_sb   (info, instruction); break;
+      default   : assert(0 && "Unexpected info.type");
     }
   }
 }
@@ -357,7 +394,7 @@ constexpr Decoder::Instruction_info Decoder::decode(Uxlen instruction) {
   Instruction_info info{};
 
   info.instruction = decode_concrete_instruction(instruction);
-  decode_instruction_type(info);
+  decode_instruction_type(info, instruction);
 
   return info;
 }
