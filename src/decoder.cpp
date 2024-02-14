@@ -5,6 +5,7 @@
 #include <cassert>
 #include <climits>
 
+#include <initializer_list>
 #include <iostream>
 #include <optional>
 
@@ -57,23 +58,30 @@ namespace {
   };
 
   template <typename T> requires Right_shiftable<T> && Andable<T>
-  constexpr T extract_bits(T data, Bit_range range) {
+  constexpr T extract_bits(T data, Bit_range range, bool sext = false) {
     assert(range.get_msb() < (sizeof(T) * CHAR_BIT));
-    return (data >> range.get_lsb()) & static_cast<T>(make_mask<unsigned long long>(range.get_width()));
+    T unextended{(data >> range.get_lsb()) & static_cast<T>(make_mask<unsigned long long>(range.get_width()))};
+    if (sext) return sign_extend(unextended, range.get_width() - 1);
+    else      return unextended;
   }
 
   template <typename T> requires Right_shiftable<T> && Andable<T>
-  constexpr T extract_bits(T data, std::size_t pos) {
-    return extract_bits(data, {pos, pos});
+  constexpr T extract_bits(T data, std::size_t pos, bool sext = false) {
+    return extract_bits(data, {pos, pos}, sext);
   }
 
-  template<typename T, typename ... U>
-  concept Are_all_of = (std::same_as<T, U> && ...);
+  template <typename T>
+  concept Left_shiftable = requires(T a) {
+    a << 1;
+  };
 
-  template <typename T, typename ...Q> requires Are_all_of<Bit_range, Q...>
-  constexpr T extract_bits(T data, Bit_range lsb_bit_range, Q ...msb_bit_ranges) {
-    return (extract_bits(data, msb_bit_ranges...) << lsb_bit_range.get_width()) | extract_bits(data, lsb_bit_range);
-  }
+  template <typename T>
+  concept Shiftable = Left_shiftable<T> && Right_shiftable<T>;
+
+  template <typename T>
+  concept Orable = requires(T a) {
+    a | static_cast<T>(1);
+  };
 
   template <typename T>
   constexpr T sign_extend(T data, std::size_t sign_pos) {
@@ -81,6 +89,15 @@ namespace {
 
     T m{1U << (sign_pos-1)};
     return (data ^ m) - m;
+  }
+
+  template <typename T> requires Shiftable<T> && Orable<T>
+  constexpr T extract_bits(T data, std::initializer_list<Bit_range> bit_ranges, bool sext = false) {
+    T result{extract_bits(data, *(bit_ranges.begin()), sext)};
+    for (const auto *it{bit_ranges.begin() + 1}; it != bit_ranges.end(); ++it) {
+      result = (result << (*it).get_width()) | extract_bits(data, *it);
+    }
+    return result;
   }
 
   constexpr unsigned int get_funct3(Uxlen instruction) {
