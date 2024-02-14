@@ -21,3 +21,4 @@
 
 -I./inc
 -isystem./src/
+--background-index=true
