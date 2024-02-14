@@ -57,6 +57,14 @@ namespace {
     a & static_cast<T>(1);
   };
 
+  template <typename T>
+  constexpr T sign_extend(T data, std::size_t sign_pos) {
+    assert(sign_pos < (sizeof(data) * 8));
+
+    T m{1U << (sign_pos-1)};
+    return (data ^ m) - m;
+  }
+
   template <typename T> requires Right_shiftable<T> && Andable<T>
   constexpr T extract_bits(T data, Bit_range range, bool sext = false) {
     assert(range.get_msb() < (sizeof(T) * CHAR_BIT));
@@ -82,14 +90,6 @@ namespace {
   concept Orable = requires(T a) {
     a | static_cast<T>(1);
   };
-
-  template <typename T>
-  constexpr T sign_extend(T data, std::size_t sign_pos) {
-    assert(sign_pos < (sizeof(data) * 8));
-
-    T m{1U << (sign_pos-1)};
-    return (data ^ m) - m;
-  }
 
   template <typename T> requires Shiftable<T> && Orable<T>
   constexpr T extract_bits(T data, std::initializer_list<Bit_range> bit_ranges, bool sext = false) {
