@@ -20,5 +20,4 @@
 -DUNIT_TEST
 
 -I./inc
--isystem./src/
 --background-index=true

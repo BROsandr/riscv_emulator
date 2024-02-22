@@ -401,7 +401,7 @@ constexpr Decoder::Instruction_info Decoder::decode(Uxlen instruction) {
 
 #ifdef UNIT_TEST
 #define CATCH_CONFIG_MAIN
-#include <catch.hpp>
+#include "catch.hpp"
 
 TEST_CASE("Decoder add", "[ADD]") {
   Decoder decoder{0};
