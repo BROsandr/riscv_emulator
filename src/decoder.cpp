@@ -414,4 +414,38 @@ TEST_CASE("Decoder add", "[ADD]") {
     REQUIRE(info.rs2  == 3);
   }
 }
+
+TEST_CASE("Decoder addi", "[ADDI]") {
+  Decoder decoder{0};
+  SECTION("addi x1, x2, 256") {
+    Decoder::Instruction_info info{decoder.decode(0x10010093)};
+    REQUIRE(info.instruction == Decoder::Concrete_instruction::instr_addi);
+    REQUIRE(info.type == Decoder::Instruction_type::i);
+    REQUIRE(info.rd   == 1);
+    REQUIRE(info.rs1  == 2);
+    REQUIRE(info.imm  == 256);
+  }
+}
+
+TEST_CASE("Decoder csrw", "[CSRW]") {
+  SECTION("enabled zicsr") {
+    Decoder decoder{Decoder::Isa_extension::isa_zicsr};
+    SECTION("nothrow") {
+      REQUIRE_NOTHROW(decoder.decode(0x30529073));
+    }
+    SECTION("csrw mtvec, x5") {
+      Decoder::Instruction_info info{decoder.decode(0x30529073)};
+      REQUIRE(info.instruction == Decoder::Concrete_instruction::instr_csrrw);
+      REQUIRE(info.type == Decoder::Instruction_type::i);
+      REQUIRE(info.rs1  == 5);
+      REQUIRE(info.imm  == 0x305);
+    }
+  }
+  SECTION("disabled zicsr") {
+    Decoder decoder{0};
+    SECTION("throws") {
+      REQUIRE_THROWS(decoder.decode(0x30529073));
+    }
+  }
+}
 #endif
