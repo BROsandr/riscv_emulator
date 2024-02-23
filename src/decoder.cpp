@@ -61,7 +61,7 @@ namespace {
   constexpr T sign_extend(T data, std::size_t sign_pos) {
     assert(sign_pos < (sizeof(data) * 8));
 
-    T m{1U << (sign_pos-1)};
+    T m{T{1} << (sign_pos-1)};
     return (data ^ m) - m;
   }
 
