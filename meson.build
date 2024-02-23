@@ -28,7 +28,7 @@ endif
 
 src_unit_test_files = [
     'alu.cpp'
-    # ,'decoder.cpp'
+    ,'decoder.cpp'
 ]
 src_dir = 'src'
 
