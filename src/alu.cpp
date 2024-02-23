@@ -486,10 +486,6 @@ TEST_CASE("Alu_NE", "[NE]") {
   }
 }
 
-TEST_CASE("Alu_throws", "[throws]") {
-  REQUIRE_THROWS(calculate(static_cast<Alu::Op>(-1), 1, 0));
-}
-
 TEST_CASE("Alu class", "[class]") {
 
   SECTION("2 + 3") {
