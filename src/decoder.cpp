@@ -213,37 +213,37 @@ namespace {
     assert((void("Unknown instruction" + std::to_string(instruction)),0));
   }
 
-  constexpr void decode_i   (Decoder::Instruction_info info, Uxlen instr) {
+  constexpr void decode_i   (Decoder::Instruction_info &info, Uxlen instr) {
     info.rd  = get_rd(instr);
     info.rs1 = get_rs1(instr);
     info.imm = get_imm12(instr);
   }
-  constexpr void decode_i_sh5(Decoder::Instruction_info info, Uxlen instr) {
+  constexpr void decode_i_sh5(Decoder::Instruction_info &info, Uxlen instr) {
     info.rd  = get_rd(instr);
     info.rs1 = get_rs1(instr);
     info.imm = get_shamt5(instr);
   }
-  constexpr void decode_r    (Decoder::Instruction_info info, Uxlen instr) {
+  constexpr void decode_r    (Decoder::Instruction_info &info, Uxlen instr) {
     info.rd  = get_rd(instr);
     info.rs1 = get_rs1(instr);
     info.rs2 = get_rs2(instr);
   }
-  constexpr void decode_s    (Decoder::Instruction_info info, Uxlen instr) {
+  constexpr void decode_s    (Decoder::Instruction_info &info, Uxlen instr) {
     info.rs1 = get_rs1(instr);
     info.rs2 = get_rs2(instr);
     info.imm = get_simm12(instr);
   }
-  constexpr void decode_u    (Decoder::Instruction_info info, Uxlen instr) {
+  constexpr void decode_u    (Decoder::Instruction_info &info, Uxlen instr) {
     info.rd  = get_rd(instr);
     info.rs1 = get_rs1(instr);
     info.imm = get_imm20(instr);
   }
-  constexpr void decode_uj   (Decoder::Instruction_info info, Uxlen instr) {
+  constexpr void decode_uj   (Decoder::Instruction_info &info, Uxlen instr) {
     info.rd  = get_rd(instr);
     info.rs1 = get_rs1(instr);
     info.imm = get_jimm20(instr);
   }
-  constexpr void decode_sb   (Decoder::Instruction_info info, Uxlen instr) {
+  constexpr void decode_sb   (Decoder::Instruction_info &info, Uxlen instr) {
     info.rs1 = get_rs1(instr);
     info.rs2 = get_rs2(instr);
     info.imm = get_sbimm12(instr);
