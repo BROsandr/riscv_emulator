@@ -125,7 +125,7 @@ namespace {
   }
 
   constexpr Uxlen get_jimm20(Uxlen instruction) {
-    return extract_bits(instruction, {20, {10, 1}, 11, {19, 12}});
+    return extract_bits(instruction, {Bit_range{20}, {10, 1}, Bit_range{11}, {19, 12}});
   }
 
   constexpr Uxlen get_imm12(Uxlen instruction) {
@@ -141,7 +141,7 @@ namespace {
   }
 
   constexpr Uxlen get_sbimm12(Uxlen instruction) {
-    return extract_bits(instruction, {12, {10, 5}, {4, 1}, 11}, true);
+    return extract_bits(instruction, {Bit_range{12}, {10, 5}, {4, 1}, Bit_range{11}}, true);
   }
 
   constexpr std::string to_string(Decoder::Isa_extension extension) {
