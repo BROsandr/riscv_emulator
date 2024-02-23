@@ -407,5 +407,11 @@ TEST_CASE("Decoder add", "[ADD]") {
   Decoder decoder{0};
   SECTION("add x1, x2, x3") {
     Decoder::Instruction_info info{decoder.decode(0x003100b3)};
+    REQUIRE(info.instruction == Decoder::Concrete_instruction::instr_add);
+    REQUIRE(info.type == Decoder::Instruction_type::r);
+    REQUIRE(info.rd   == 1);
+    REQUIRE(info.rs1  == 2);
+    REQUIRE(info.rs2  == 3);
   }
+}
 #endif
