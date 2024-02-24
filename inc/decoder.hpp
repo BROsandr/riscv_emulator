@@ -121,12 +121,12 @@ class Decoder {
     explicit constexpr Decoder(Isa_ext_container extensions)
         : isa_ext_container{extensions} {};
     constexpr Decoder() = default;
-    constexpr Instruction_info decode(Uxlen instruction);
+    constexpr Instruction_info decode(Uxlen instruction) const;
 
   private:
     const Isa_ext_container isa_ext_container{};
 
-    constexpr Concrete_instruction decode_concrete_instruction(Uxlen instruction);
+    constexpr Concrete_instruction decode_concrete_instruction(Uxlen instruction) const;
 
     enum class Opcode {
       load     = 0b00000,

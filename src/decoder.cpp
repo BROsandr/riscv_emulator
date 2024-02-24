@@ -269,7 +269,8 @@ namespace {
   }
 }
 
-constexpr Decoder::Concrete_instruction Decoder::decode_concrete_instruction(Uxlen instruction) {
+constexpr Decoder::Concrete_instruction Decoder::decode_concrete_instruction(Uxlen instruction)
+    const {
   if ((instruction & 0b11) != 0b11) {
     throw Errors::Illegal_instruction{instruction, "(instruction & 0b11) != 0b11"};
   }
@@ -393,7 +394,7 @@ constexpr Decoder::Concrete_instruction Decoder::decode_concrete_instruction(Uxl
   }
 }
 
-constexpr Decoder::Instruction_info Decoder::decode(Uxlen instruction) {
+constexpr Decoder::Instruction_info Decoder::decode(Uxlen instruction) const {
   Instruction_info info{};
 
   info.instruction = decode_concrete_instruction(instruction);
