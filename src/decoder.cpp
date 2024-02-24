@@ -446,6 +446,13 @@ TEST_CASE("Decoder csrw", "[CSRW]") {
     SECTION("throws") {
       REQUIRE_THROWS(decoder.decode(0x30529073));
     }
+    SECTION("throws instruction content check") {
+      try {
+        decoder.decode(0x30529073);
+      } catch (const Errors::Illegal_instruction &exception) {
+        REQUIRE(exception.m_instruction == 0x30529073);
+      }
+    }
   }
 }
 #endif
