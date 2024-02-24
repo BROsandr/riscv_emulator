@@ -8,6 +8,7 @@
 #include <initializer_list>
 #include <iostream>
 #include <optional>
+#include <type_traits>
 
 namespace {
   class Bit_range {
@@ -144,11 +145,13 @@ namespace {
     return extract_bits(instruction, {Bit_range{12}, {10, 5}, {4, 1}, Bit_range{11}}, true);
   }
 
-  constexpr std::string to_string(Decoder::Isa_extension extension) {
-    using enum Decoder::Isa_extension;
+  constexpr std::string to_string(Isa_extension extension) {
+    using enum Isa_extension;
     switch (extension) {
       case isa_zicsr: return "Zicsr";
-      default: assert((void("Unknown isa_extension" + std::to_string(extension)), 0));
+      default: assert((void("Unknown isa_extension" + std::to_string(
+          static_cast<std::underlying_type_t<Isa_extension>>(extension))), 0)
+      );
     }
   }
 
@@ -367,7 +370,7 @@ constexpr Decoder::Concrete_instruction Decoder::decode_concrete_instruction(Uxl
           break;
         case 4: break;
         default: // the rest are csr
-          if (isa_extensions[Isa_extension::isa_zicsr]) {
+          if (isa_ext_container[Isa_extension::isa_zicsr]) {
             switch(funct3) {
               case 1: return Concrete_instruction::instr_csrrw;
               case 2: return Concrete_instruction::instr_csrrs;
@@ -429,7 +432,7 @@ TEST_CASE("Decoder addi", "[ADDI]") {
 
 TEST_CASE("Decoder csrw", "[CSRW]") {
   SECTION("enabled zicsr") {
-    Decoder decoder{Decoder::Isa_extension::isa_zicsr};
+    Decoder decoder{Isa_extension::isa_zicsr};
     SECTION("nothrow") {
       REQUIRE_NOTHROW(decoder.decode(0x30529073));
     }
