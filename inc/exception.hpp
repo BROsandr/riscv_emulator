@@ -1,3 +1,5 @@
+#pragma once
+
 #include "riscv.hpp"
 
 #include <stdexcept>
