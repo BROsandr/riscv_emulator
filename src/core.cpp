@@ -1,13 +1,15 @@
 #include "core.hpp"
+
 #include "alu.hpp"
 #include "decoder.hpp"
+#include "factory.hpp"
 
 void Core::increment_pc() {
   pc += 4;
 }
 
 void Core::cycle() {
-  const Uxlen instruction{fetch_instruction(this->instr_mem)};
+  Decoder decoder{Factory::get_instance().create_decoder()};
 
   Decoder::Callbacks callbacks {
     .op_imm = [this](Alu::Op op, std::size_t ra1, Uxlen imm_i, std::size_t wa) {
