@@ -82,8 +82,12 @@ class Decoder {
       Instruction_type     type       {};
     };
 
-    constexpr Decoder(Isa_extensions extensions) : isa_extensions{extensions} {};
-    constexpr Decoder(Isa_extension  extension)  : Decoder{Isa_extensions{}.set(extension)} {};
+    explicit constexpr Decoder(Isa_extensions extensions)
+        : isa_extensions{extensions} {};
+    explicit constexpr Decoder(Isa_extension  extension)
+        : Decoder{Isa_extensions{}.set(extension)} {};
+    constexpr Decoder()
+        : Decoder{Isa_extensions{}} {};
     constexpr Instruction_info decode(Uxlen instruction);
 
   private:

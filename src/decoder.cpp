@@ -404,7 +404,7 @@ constexpr Decoder::Instruction_info Decoder::decode(Uxlen instruction) {
 #include "catch2/catch_test_macros.hpp"
 
 TEST_CASE("Decoder add", "[ADD]") {
-  Decoder decoder{0};
+  Decoder decoder{};
   SECTION("add x1, x2, x3") {
     Decoder::Instruction_info info{decoder.decode(0x003100b3)};
     REQUIRE(info.instruction == Decoder::Concrete_instruction::instr_add);
@@ -416,7 +416,7 @@ TEST_CASE("Decoder add", "[ADD]") {
 }
 
 TEST_CASE("Decoder addi", "[ADDI]") {
-  Decoder decoder{0};
+  Decoder decoder{};
   SECTION("addi x1, x2, 256") {
     Decoder::Instruction_info info{decoder.decode(0x10010093)};
     REQUIRE(info.instruction == Decoder::Concrete_instruction::instr_addi);
@@ -442,7 +442,7 @@ TEST_CASE("Decoder csrw", "[CSRW]") {
     }
   }
   SECTION("disabled zicsr") {
-    Decoder decoder{0};
+    Decoder decoder{};
     SECTION("throws") {
       REQUIRE_THROWS(decoder.decode(0x30529073));
     }
