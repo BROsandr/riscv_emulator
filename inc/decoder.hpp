@@ -2,49 +2,7 @@
 
 #include "riscv.hpp"
 
-#include <initializer_list>
-#include <bitset>
-#include <algorithm>
-
-enum class Isa_extension {
-  isa_zicsr,
-  isa_number_
-};
-
-class Isa_ext_container {
-  private:
-    using Base_bitset = std::bitset<static_cast<std::size_t>(Isa_extension::isa_number_)>;
-
-  public:
-    constexpr Isa_ext_container(std::initializer_list<Isa_extension> extensions) {
-      std::for_each(extensions.begin(), extensions.end(),
-          [this](const auto &extension) {
-            set(extension);
-          });
-    }
-    constexpr Isa_ext_container(Isa_extension extension)
-        : Isa_ext_container({extension}) {}
-    constexpr Isa_ext_container() = default;
-
-    constexpr bool operator[](Isa_extension extension) const {
-      return m_extensions[static_cast<std::size_t>(extension)];
-    }
-    constexpr Base_bitset::reference operator[](Isa_extension extension) {
-      return m_extensions[static_cast<std::size_t>(extension)];
-    }
-
-    constexpr Isa_ext_container& set() {
-      m_extensions.set();
-      return *this;
-    }
-    constexpr Isa_ext_container& set(Isa_extension extension, bool value = true) {
-      m_extensions.set(static_cast<std::size_t>(extension), value);
-      return *this;
-    }
-
-  private:
-    Base_bitset m_extensions{};
-};
+#include "isa_extension.hpp"
 
 class Decoder {
   public:
