@@ -9,6 +9,7 @@ void Core::increment_pc() {
 }
 
 void Core::cycle() {
+  const Uxlen instruction{fetch_instruction()};
   Decoder decoder{Factory::get_instance().create_decoder()};
 
   Decoder::Callbacks callbacks {

@@ -36,6 +36,7 @@ class Core {
     Rf rf{};
     Csr csr{};
     Uxlen pc{0};
+    constexpr Uxlen fetch_instruction() const;
 
     void increment_pc();
 };
