@@ -304,7 +304,7 @@ constexpr Decoder::Concrete_instruction Decoder::decode_concrete_instruction(Uxl
           }
           break;
         case 6: return Concrete_instruction::instr_ori;
-        case 7: return Concrete_instruction::instr_addi;
+        case 7: return Concrete_instruction::instr_andi;
       }
       break;
     case Opcode::auipc:
