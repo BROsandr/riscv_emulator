@@ -2,7 +2,7 @@
 
 #include "alu.hpp"
 #include "decoder.hpp"
-#include "factory.hpp"
+#include "configurator.hpp"
 
 void Core::increment_pc() {
   pc += 4;
@@ -10,7 +10,7 @@ void Core::increment_pc() {
 
 void Core::cycle() {
   const Uxlen instruction{fetch_instruction()};
-  Decoder decoder{Factory::get_instance().create_decoder()};
+  Decoder decoder{Configurator::get_instance().create_decoder()};
 
   Decoder::Callbacks callbacks {
     .op_imm = [this](Alu::Op op, std::size_t ra1, Uxlen imm_i, std::size_t wa) {
