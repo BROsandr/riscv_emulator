@@ -109,15 +109,15 @@ namespace {
     return static_cast<unsigned int>(extract_bits(instruction, {31, 25}));
   }
 
-  constexpr std::size_t get_rd(Uxlen instruction) {
+  constexpr unsigned int get_rd(Uxlen instruction) {
     return extract_bits(instruction, {11, 7});
   }
 
-  constexpr std::size_t get_rs1(Uxlen instruction) {
+  constexpr unsigned int get_rs1(Uxlen instruction) {
     return extract_bits(instruction, {19, 15});
   }
 
-  constexpr std::size_t get_rs2(Uxlen instruction) {
+  constexpr unsigned int get_rs2(Uxlen instruction) {
     return extract_bits(instruction, {24, 20});
   }
 
