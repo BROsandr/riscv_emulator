@@ -10,4 +10,8 @@ class Csr : public Memory {
       CSR_RSI = 0b110,
       CSR_RCI = 0b111
     };
+
+  enum Register {
+    mepc = 0x341,
+  };
 };
