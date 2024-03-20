@@ -15,7 +15,7 @@ namespace Lsu {
     w
   };
 
-  constexpr Uxlen get_data(Op op, std::size_t addr, Uxlen data) {
+  constexpr Uxlen transform_data(Op op, std::size_t addr, Uxlen data) {
     switch (op) {
       case Op::b:
         switch (addr & 0b11) {
