@@ -1,19 +1,10 @@
 #pragma once
 
 #include "riscv.hpp"
+#include "memory.hpp"
+#include "csr.hpp"
 
 #include <functional>
-
-class Memory;
-
-struct Rf {
-  Uxlen read(std::size_t address);
-  Uxlen write(std::size_t address, Uxlen data);
-};
-
-struct Csr {
-  enum class Op {};
-};
 
 class Core {
   public:

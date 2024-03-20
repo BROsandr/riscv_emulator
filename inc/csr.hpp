@@ -1,6 +1,6 @@
 #pragma once
 
-class Csr {
+class Csr : public Memory {
   public:
     enum class Op {
       CSR_RW  = 0b001,
