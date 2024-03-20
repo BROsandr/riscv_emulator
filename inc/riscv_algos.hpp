@@ -39,8 +39,8 @@ constexpr bool is_overlapping(const Bit_range& lhs, const Bit_range& rhs) {
 }
 
 template <typename T>
-constexpr T make_mask(std::size_t len, std::size_t pos = 0) {
-  return ((static_cast<T>(1) << len)-1) << pos;
+constexpr T make_mask(std::size_t len, std::size_t start_pos = 0) {
+  return ((static_cast<T>(1) << len)-1) << start_pos;
 }
 
 template<typename T>
