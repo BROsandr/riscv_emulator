@@ -43,11 +43,16 @@ namespace {
   }
 }
 
-constexpr Alu::Alu(Op op, Uxlen a, Uxlen b) {
-  const auto &out = calculate(op, a, b);
+namespace Alu {
+  Uxlen calc_result(Alu::Op op, Uxlen a, Uxlen b) {
+    const auto [result, flag] = calculate(op, a, b);
+    return result;
+  }
 
-  this->result = out.first;
-  this->flag   = out.second;
+  bool calc_flag(Alu::Op op, Uxlen a, Uxlen b) {
+    const auto [result, flag] = calculate(op, a, b);
+    return flag;
+  }
 }
 
 #ifdef UNIT_TEST
@@ -489,14 +494,12 @@ TEST_CASE("Alu_NE", "[NE]") {
 TEST_CASE("Alu class", "[class]") {
 
   SECTION("2 + 3") {
-    Alu alu{Alu::Op::ADD, 2, 3};
-    REQUIRE(alu.get_result() == 5);
-    REQUIRE(alu.get_flag  () == 0);
+    REQUIRE(Alu::calc_result(Alu::Op::ADD, 2, 3) == 5);
+    REQUIRE(Alu::calc_flag  (Alu::Op::ADD, 2, 3) == 0);
   }
   SECTION("2 == 2") {
-    Alu alu{Alu::Op::EQ, 2, 2};
-    REQUIRE(alu.get_result() == 0);
-    REQUIRE(alu.get_flag  () == 1);
+    REQUIRE(Alu::calc_result(Alu::Op::EQ, 2, 2) == 0);
+    REQUIRE(Alu::calc_flag  (Alu::Op::EQ, 2, 2) == 1);
   }
 }
 #endif
