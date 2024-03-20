@@ -20,7 +20,7 @@ class Core {
     Core& operator=(      Core&&) = delete;
 
     std::function<void()> irq_callback{nullptr};
-    void return_from_irq();
+    std::function<void()> return_from_irq();
     bool irq_req{false};
     Memory &instr_mem;
     Memory &data_mem;
