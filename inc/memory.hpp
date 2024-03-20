@@ -6,7 +6,7 @@
 
 class Memory {
   public:
-    virtual void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) = 0;
+    virtual void write(std::size_t addr, Uxlen data, [[maybe_unused]] unsigned int byte_en = 0xf) = 0;
     virtual Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) const = 0;
 
     virtual ~Memory() = default;
@@ -16,10 +16,10 @@ class Rf : public Memory {
   public:
     Rf(unsigned int registers_number = 32) : registers(registers_number, 0) {}
 
-    void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override {
+    void write(std::size_t addr, Uxlen data, [[maybe_unused]] unsigned int byte_en = 0xf) override {
       registers[addr] = data;
     }
-    Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) const override {
+    Uxlen read (std::size_t addr, [[maybe_unused]] unsigned int byte_en = 0xf) const override {
       return registers[addr];
     }
 
