@@ -1,8 +1,9 @@
 { sources ? import ./nix/sources.nix }:
 let
   pkgs = import sources.nixpkgs { config = {}; overlays = []; };
+  defaultBuild = pkgs.callPackage ./. { };
   shell = pkgs.mkShell {
-    # inputsFrom = [ defaultBuild ];
+    inputsFrom = [ defaultBuild ];
     packages = with pkgs; [
       niv
       gdb
