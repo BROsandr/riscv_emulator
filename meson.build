@@ -6,8 +6,10 @@ catch_dep = dependency('catch2-with-main')
 src_test_files = {
     'test_alu.cpp' : [
       'alu.cpp'
-    ]
-    # ,'decoder.cpp'
+    ],
+    'test_decoder.cpp' : [
+      'decoder.cpp'
+    ],
 }
 test_dir = 'tests'
 src_dir = 'src'
