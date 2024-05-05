@@ -41,6 +41,7 @@ PROG_ARGV?=
 BUILD_DIR?=${PWD}/build
 MESON_EXTRA_CONFIGURE_FLAGS?=
 MESON_BUILD_FLAGS?=
+MESON_TEST_FLAGS?=
 out?=${BUILD_DIR}
 PROGRAM_NAME:=riscv_emulator
 
@@ -48,6 +49,7 @@ CONFIGURE_TIMESTAMP:=${BUILD_DIR}/.configure.timestamp
 
 CONFIGURE_CMD:=meson setup "${BUILD_DIR}" --buildtype "${BUILD_TYPE}" ${MESON_DEBUG_FLAGS} ${MESON_EXTRA_CONFIGURE_FLAGS}
 BUILD_CMD:=meson compile -C "${BUILD_DIR}" ${MESON_BUILD_FLAGS}
+TEST_CMD:=meson test -C "${BUILD_DIR}" ${MESON_TEST_FLAGS}
 
 default: clean configure build;
 
@@ -72,6 +74,9 @@ build: ${BUILD_DIR}/${PROGRAM_NAME}
 run: ${BUILD_DIR}/${PROGRAM_NAME}
 	${<} ${PROG_ARGV}
 
+test: ${CONFIGURE_TIMESTAMP}
+	${TEST_CMD}
+
 install: ${BUILD_DIR}/${PROGRAM_NAME}
 	mkdir -p "${out}/bin"
 	cp "${BUILD_DIR}/${PROGRAM_NAME}" "${out}/bin"
@@ -79,4 +84,4 @@ install: ${BUILD_DIR}/${PROGRAM_NAME}
 clean:
 	rm -rf "${BUILD_DIR}"
 
-.PHONY: default clean build configure install run
+.PHONY: default clean build configure install run test
