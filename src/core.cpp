@@ -225,7 +225,7 @@ namespace {
 void Core::cycle() {
   const Uxlen instruction{fetch_instruction()};
   const Decoder decoder{Configurator::get_instance().create_decoder()};
-  const Decoder::Instruction_info instr_info = decoder.decode(instruction);
+  const Decoder::Instruction_info instr_info{decoder.decode(instruction)};
 
   switch (to_handler_type(instr_info.instruction)) {
     case Handler_type::type_calc_imm: handle_type_calc_imm(instr_info, rf); break;
