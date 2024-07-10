@@ -11,7 +11,9 @@ TEST_CASE("Directed test vectors", "[direct]") {
       rf.write(i, i);
     }
     for (unsigned int i{0}; i < 32; ++i) {
-      REQUIRE(rf.read(i) == i);
+      SECTION("i == " + std::to_string(i)) {
+        REQUIRE(rf.read(i) == i);
+      }
     }
   }
 }
