@@ -2,8 +2,6 @@
 
 #include "exception.hpp"
 
-#include <cassert>
-
 namespace {
 
   template<typename Int_t>
@@ -44,22 +42,4 @@ Uxlen Csr::read(std::size_t addr, unsigned int byte_en) {
   } catch (const std::out_of_range &) {
     throw Errors::Illegal_addr(reg, "Read register was never written.");
   }
-}
-
-Uxlen Csr::do_op(Op op, std::size_t addr, Uxlen data) {
-  using enum Csr::Op;
-  Uxlen res{read(addr)};
-  switch (op) {
-    case CSR_RW: case CSR_RWI:
-      write(addr, data);
-      break;
-    case CSR_RS: case CSR_RSI:
-      write(addr, res | data);
-      break;
-    case CSR_RC: case CSR_RCI:
-      write(addr, res & ~data);
-      break;
-    default: assert(0 && "Illegal csr op.");
-  }
-  return res;
 }

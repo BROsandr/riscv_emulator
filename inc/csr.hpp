@@ -14,17 +14,6 @@ class Csr : public Memory {
       MCAUSE   = 0x342,
     };
 
-    enum class Op {
-      CSR_RW  = 0b001,
-      CSR_RS  = 0b010,
-      CSR_RC  = 0b011,
-      CSR_RWI = 0b101,
-      CSR_RSI = 0b110,
-      CSR_RCI = 0b111
-    };
-
-    Uxlen do_op(Op op, std::size_t addr, Uxlen data);
-
     void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override;
     Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override;
 

@@ -53,9 +53,18 @@ namespace {
     }
   }
 
-  constexpr Csr::Op to_csr_op(Decoder::Concrete_instruction instr) {
+  enum class Csr_op {
+    CSR_RW  = 0b001,
+    CSR_RS  = 0b010,
+    CSR_RC  = 0b011,
+    CSR_RWI = 0b101,
+    CSR_RSI = 0b110,
+    CSR_RCI = 0b111
+  };
+
+  constexpr Csr_op to_csr_op(Decoder::Concrete_instruction instr) {
     using enum Decoder::Concrete_instruction;
-    using enum Csr::Op;
+    using enum Csr_op;
     switch (instr) {
       case instr_csrrw : return CSR_RW;
       case instr_csrrs : return CSR_RS;
@@ -218,16 +227,35 @@ namespace {
     pc = (rf.read(instr_info.rs1) + instr_info.imm) & make_mask<Uxlen>(32, 1);
   }
 
-  constexpr void handle_type_csr_imm(const Decoder::Instruction_info &instr_info, Memory &rf, Memory &csr) {
-    const Uxlen data{csr.read(instr_info.imm)};
-    rf.write(instr_info.rd, data);
-    csr.write(instr_info.imm, instr_info.rs1);
+  constexpr Uxlen exec_csr_op(Memory &csr, Csr_op op, std::size_t addr, Uxlen data) {
+    using enum Csr_op;
+    Uxlen res{csr.read(addr)};
+    switch (op) {
+      case CSR_RW: case CSR_RWI:
+        csr.write(addr, data);
+        break;
+      case CSR_RS: case CSR_RSI:
+        csr.write(addr, res | data);
+        break;
+      case CSR_RC: case CSR_RCI:
+        csr.write(addr, res & ~data);
+        break;
+      default: assert(0 && "Illegal csr op.");
+    }
+    return res;
+  }
+
+  constexpr void handle_type_csr_imm(const Decoder::Instruction_info &instr_info, Memory &rf, Csr &csr) {
+    const Csr_op op{to_csr_op(instr_info.instruction)};
+    const Uxlen rd_data{exec_csr_op(csr, op, instr_info.imm, instr_info.rs1)};
+    rf.write(instr_info.rd, rd_data);
   }
 
   constexpr void handle_type_csr_reg(const Decoder::Instruction_info &instr_info, Memory &rf, Memory &csr) {
-    const Uxlen data{csr.read(instr_info.imm)};
-    rf.write(instr_info.rd, data);
-    csr.write(instr_info.imm, rf.read(instr_info.rs1));
+    const Csr_op op{to_csr_op(instr_info.instruction)};
+    const Uxlen rd_data{exec_csr_op(csr, op, instr_info.imm,
+        rf.read(instr_info.rs1))};
+    rf.write(instr_info.rd, rd_data);
   }
 
   void handle_type_mret(std::function<void(void)> return_from_irq, const Memory &csr, auto &pc) {
