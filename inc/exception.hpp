@@ -15,4 +15,12 @@ namespace Errors {
     Illegal_instruction(Uxlen instruction, const std::string &message = "")
         : Error(std::to_string(instruction) + " : " + message),  m_instruction{instruction} {}
   };
+
+  template <typename Addr>
+  struct Illegal_addr : public Error {
+    Addr m_addr{};
+
+    Illegal_addr(Addr addr, const std::string &message = "")
+        : Error("Illegal address " + std::to_string(addr) + " : " + message),  m_addr{addr} {}
+  };
 }
