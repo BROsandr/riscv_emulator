@@ -245,7 +245,7 @@ namespace {
     return res;
   }
 
-  constexpr void handle_type_csr_imm(const Decoder::Instruction_info &instr_info, Memory &rf, Csr &csr) {
+  constexpr void handle_type_csr_imm(const Decoder::Instruction_info &instr_info, Memory &rf, Memory &csr) {
     const Csr_op op{to_csr_op(instr_info.instruction)};
     const Uxlen rd_data{exec_csr_op(csr, op, instr_info.imm, instr_info.rs1)};
     rf.write(instr_info.rd, rd_data);
@@ -269,6 +269,11 @@ void Core::cycle() {
   const Uxlen instruction{fetch_instruction()};
   const Decoder decoder{Configurator::get_instance().create_decoder()};
   const Decoder::Instruction_info instr_info{decoder.decode(instruction)};
+  Memory &rf{get_rf()};
+  Memory &csr{get_csr()};
+  Memory &data_mem{get_data_mem()};
+  auto &pc = get_pc();
+  auto return_from_irq = get_return_from_irq();
 
   switch (to_handler_type(instr_info.instruction)) {
     case Handler_type::type_calc_imm: handle_type_calc_imm(instr_info, rf); break;
