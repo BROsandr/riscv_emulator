@@ -48,6 +48,9 @@ class Core {
     Uxlen& get_pc() {
       return m_pc;
     }
+    Uxlen get_pc() const {
+      return m_pc;
+    }
 
     Core(const Core&) = delete;
     Core& operator=(const Core& ) = delete;
@@ -61,7 +64,9 @@ class Core {
     Memory &m_csr;
     Memory &m_rf;
     Uxlen m_pc{0};
-    constexpr Uxlen fetch_instruction() const;
+    constexpr Uxlen fetch_instruction() const {
+      return get_data_mem().read(get_pc());
+    }
 
     void increment_pc();
 };
