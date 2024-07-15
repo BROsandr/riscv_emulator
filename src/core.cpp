@@ -1,6 +1,7 @@
 #include "core.hpp"
 
 #include "alu.hpp"
+#include "csr.hpp"
 #include "decoder.hpp"
 #include "configurator.hpp"
 #include "lsu.hpp"
@@ -49,6 +50,20 @@ namespace {
       case instr_bne : return Alu::NE  ;
 
       default: assert(0 && "Invalid instr2alu_op conversion");
+    }
+  }
+
+  constexpr Csr::Op to_csr_op(Decoder::Concrete_instruction instr) {
+    using enum Decoder::Concrete_instruction;
+    using enum Csr::Op;
+    switch (instr) {
+      case instr_csrrw : return CSR_RW;
+      case instr_csrrs : return CSR_RS;
+      case instr_csrrc : return CSR_RC;
+      case instr_csrrwi: return CSR_RWI;
+      case instr_csrrsi: return CSR_RSI;
+      case instr_csrrci: return CSR_RCI;
+      default: assert(0 && "Invalid instr2csr_op conversion.");
     }
   }
 
