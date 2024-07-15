@@ -40,6 +40,6 @@ Uxlen Csr::read(std::size_t addr, unsigned int byte_en) {
   try {
     return registers.at(reg);
   } catch (const std::out_of_range &) {
-    throw Errors::Illegal_addr(reg, "Read register was never written.");
+    throw Errors::Illegal_addr(static_cast<std::size_t>(reg), "Read register was never written.");
   }
 }

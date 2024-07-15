@@ -16,8 +16,8 @@ namespace Errors {
         : Error(std::to_string(instruction) + " : " + message),  m_instruction{instruction} {}
   };
 
-  template <typename Addr>
   struct Illegal_addr : public Error {
+    using Addr = std::size_t;
     Addr m_addr{};
 
     Illegal_addr(Addr addr, const std::string &message = "")
