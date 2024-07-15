@@ -6,7 +6,7 @@
 
 class Csr : public Memory {
   public:
-    enum class Register {
+    enum Register : std::size_t {
       MEPC     = 0x341,
       MIE      = 0x304,
       MTVEC    = 0x305,

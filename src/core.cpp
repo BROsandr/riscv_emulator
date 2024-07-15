@@ -188,13 +188,13 @@ namespace {
     rf.write(instr_info.rd, alu_res);
   }
 
-  constexpr void handle_type_store(const Decoder::Instruction_info &instr_info, const Memory &rf, Memory &data_mem) {
+  constexpr void handle_type_store(const Decoder::Instruction_info &instr_info, Memory &rf, Memory &data_mem) {
     const std::size_t addr{rf.read(instr_info.rs1) + instr_info.imm};
     const Uxlen data{rf.read(instr_info.rs2)};
     data_mem.write(addr, data, Lsu::get_be(to_lsu_op(instr_info.instruction), addr));
   }
 
-  constexpr void handle_type_load(const Decoder::Instruction_info &instr_info, Memory &rf, const Memory &data_mem) {
+  constexpr void handle_type_load(const Decoder::Instruction_info &instr_info, Memory &rf, Memory &data_mem) {
     const std::size_t addr{rf.read(instr_info.rs1) + instr_info.imm};
     const auto lsu_op = to_lsu_op(instr_info.instruction);
     Uxlen data{data_mem.read(addr, Lsu::get_be(lsu_op, addr))};
@@ -202,7 +202,7 @@ namespace {
     rf.write(instr_info.rd, data);
   }
 
-  constexpr void handle_type_branch(const Decoder::Instruction_info &instr_info, const Memory &rf, auto &pc) {
+  constexpr void handle_type_branch(const Decoder::Instruction_info &instr_info, Memory &rf, auto &pc) {
     const Uxlen a{rf.read(instr_info.rs1)};
     const Uxlen b{rf.read(instr_info.rs2)};
     const Uxlen alu_flag{Alu::calc_flag(to_alu_op(instr_info.instruction), a, b)};
@@ -258,8 +258,8 @@ namespace {
     rf.write(instr_info.rd, rd_data);
   }
 
-  void handle_type_mret(std::function<void(void)> return_from_irq, const Memory &csr, auto &pc) {
-    const auto mepc = csr.read(Csr::Register::mepc);
+  void handle_type_mret(std::function<void(void)> return_from_irq, Memory &csr, auto &pc) {
+    const auto mepc = csr.read(Csr::Register::MEPC);
     pc = mepc;
     return_from_irq();
   }
