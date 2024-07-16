@@ -26,6 +26,10 @@ class Instr_mem : public Memory {
       return *requested_it;
     }
 
+    std::size_t size() const {
+      return m_end - m_it;
+    }
+
   private:
     Iter m_it;
     Iter m_end;
