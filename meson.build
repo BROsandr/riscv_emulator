@@ -11,6 +11,7 @@ src_test_files = {
       'decoder.cpp'
     ],
     'test_rf.cpp' : [ ],
+    'test_memory.cpp' : [ ],
 }
 test_dir = 'tests'
 src_dir = 'src'

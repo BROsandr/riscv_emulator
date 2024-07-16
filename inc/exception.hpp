@@ -23,4 +23,9 @@ namespace Errors {
     Illegal_addr(Addr addr, const std::string &message = "")
         : Error("Illegal address " + std::to_string(addr) + " : " + message),  m_addr{addr} {}
   };
+
+  struct Read_only : public Error {
+    Read_only(const std::string &message = "")
+        : Error("Write to read only memory : " + message) {}
+  };
 }
