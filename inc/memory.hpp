@@ -14,15 +14,15 @@ class Memory {
 
 class Rf : public Memory {
   public:
-    Rf(unsigned int registers_number = 32) : registers(registers_number, 0) {}
+    Rf(unsigned int registers_number = 32) : m_registers(registers_number, 0) {}
 
     void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override {
-      registers[addr] = data;
+      m_registers[addr] = data;
     }
     Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override {
-      return registers[addr];
+      return m_registers[addr];
     }
 
   private:
-    std::vector<Uxlen> registers;
+    std::vector<Uxlen> m_registers;
 };

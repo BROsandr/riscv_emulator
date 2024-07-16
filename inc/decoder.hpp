@@ -80,12 +80,12 @@ class Decoder {
     };
 
     explicit constexpr Decoder(Isa_ext_container extensions)
-        : isa_ext_container{extensions} {};
+        : m_isa_ext_container{extensions} {};
     constexpr Decoder() = default;
     Instruction_info decode(Uxlen instruction) const;
 
   private:
-    const Isa_ext_container isa_ext_container{};
+    const Isa_ext_container m_isa_ext_container{};
 
     Concrete_instruction decode_concrete_instruction(Uxlen instruction) const;
 

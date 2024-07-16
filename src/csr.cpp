@@ -29,7 +29,7 @@ void Csr::write(std::size_t addr, Uxlen data, unsigned int byte_en) {
 
   Register reg{static_cast<Register>(addr)};
 
-  registers[reg] = data;
+  m_registers[reg] = data;
 }
 
 Uxlen Csr::read(std::size_t addr, unsigned int byte_en) {
@@ -38,7 +38,7 @@ Uxlen Csr::read(std::size_t addr, unsigned int byte_en) {
   Register reg{static_cast<Register>(addr)};
 
   try {
-    return registers.at(reg);
+    return m_registers.at(reg);
   } catch (const std::out_of_range &) {
     throw Errors::Illegal_addr(static_cast<std::size_t>(reg), "Read register was never written.");
   }

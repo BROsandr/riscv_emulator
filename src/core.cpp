@@ -269,11 +269,11 @@ void Core::cycle() {
   const Uxlen instruction{fetch_instruction()};
   const Decoder decoder{Configurator::get_instance().create_decoder()};
   const Decoder::Instruction_info instr_info{decoder.decode(instruction)};
-  Memory &rf{get_rf()};
-  Memory &csr{get_csr()};
-  Memory &data_mem{get_data_mem()};
-  auto &pc = get_pc();
-  auto return_from_irq = get_return_from_irq();
+  Memory &rf{m_rf};
+  Memory &csr{m_csr};
+  Memory &data_mem{m_data_mem};
+  auto &pc = m_pc;
+  auto return_from_irq = m_return_from_irq;
 
   switch (to_handler_type(instr_info.instruction)) {
     case Handler_type::type_calc_imm: handle_type_calc_imm(instr_info, rf); break;

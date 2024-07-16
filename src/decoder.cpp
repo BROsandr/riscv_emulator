@@ -215,7 +215,7 @@ Decoder::Concrete_instruction Decoder::decode_concrete_instruction(Uxlen instruc
           break;
         case 4: break;
         default: // the rest are csr
-          if (isa_ext_container[Isa_extension::isa_zicsr]) {
+          if (m_isa_ext_container[Isa_extension::isa_zicsr]) {
             switch(funct3) {
               case 1: return Concrete_instruction::instr_csrrw;
               case 2: return Concrete_instruction::instr_csrrs;
