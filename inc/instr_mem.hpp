@@ -4,33 +4,29 @@
 #include "riscv.hpp"
 #include "exception.hpp"
 
+#include <stdexcept>
 #include <string>
 
-template <typename Iter>
-class Instr_mem : public Memory {
-  static_assert(std::random_access_iterator<Iter>);
+template <typename Container> requires requires (Container cont) {
+  { cont[0] } -> std::convertible_to<Uxlen>;
+  { cont.at(0) } -> std::convertible_to<Uxlen>;
+} class Instr_mem : public Memory {
   public:
-    Instr_mem(Iter it, Iter end) : m_it{it}, m_end{end} {}
+    Instr_mem(Container &instr_container) : m_instr_container{instr_container} {}
 
     void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override {
       throw Errors::Read_only{"Write into instr_mem"};
     }
 
     Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override {
-      const auto requested_it = m_it + addr;
-      if (requested_it >= m_end) {
+      try {
+        return m_instr_container.at(addr);
+      } catch (const std::out_of_range&) {
         using std::to_string;
-        throw Errors::Illegal_addr(addr, "requested address exceeds instr_mem length (" +
-            to_string(m_end - m_it) + ").");
+        throw Errors::Illegal_addr(addr, "requested address is out of instr_mem range.");
       }
-      return *requested_it;
-    }
-
-    std::size_t size() const {
-      return m_end - m_it;
     }
 
   private:
-    Iter m_it;
-    Iter m_end;
+    Container &m_instr_container;
 };

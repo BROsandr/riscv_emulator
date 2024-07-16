@@ -8,7 +8,7 @@
 TEST_CASE("instr mem", "[INSTR_MEM]") {
   std::vector<Uxlen> instr_container(2);
 
-  Instr_mem instr_mem{instr_container.begin(), instr_container.end()};
+  Instr_mem instr_mem{instr_container};
 
   SECTION("uninitialized_read") {
     REQUIRE(instr_mem.read(0) == 0);
