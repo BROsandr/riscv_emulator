@@ -4,6 +4,8 @@
 #include "riscv.hpp"
 #include "exception.hpp"
 
+#include <cassert>
+
 #include <stdexcept>
 #include <string>
 
@@ -20,8 +22,11 @@ class Instr_mem_wrap : public Memory {
     }
 
     Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override {
+      assert((byte_en == 0xf) && "only word access is supported");
+      assert(!(addr & 0b11) && "only alignment by word is supported");
+      const std::size_t word_addr{addr >> 2};
       try {
-        return m_instr_container.at(addr);
+        return m_instr_container.at(word_addr);
       } catch (const std::out_of_range&) {
         using std::to_string;
         throw Errors::Illegal_addr(addr, "requested address is out of instr_mem range.");
