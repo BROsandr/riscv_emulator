@@ -12,6 +12,7 @@ class Data_mem_wrap : public Memory {
     Data_mem_wrap(Container &container) : m_container{container} {}
 
     void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override {
+      assert(((byte_en > 0) && (byte_en <= 0xf)) && "illegal byte_en when writing to data_mem");
       const auto to_byte = [](Uxlen data_) constexpr {
         return std::byte{static_cast<uint8_t>(data_)};
       };
@@ -34,15 +35,25 @@ class Data_mem_wrap : public Memory {
     }
 
     Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override {
+      assert(((byte_en > 0) && (byte_en <= 0xf)) && "illegal byte_en when writing to data_mem");
+      const auto &const_container{m_container};
+      const auto to_uxlen = [](std::byte b) constexpr {
+        return std::to_integer<Uxlen>(b);
+      };
+      Uxlen data{};
       try {
-        const auto &const_container{m_container};
-        const auto to_uxlen = [](std::byte b) constexpr {
-          return std::to_integer<Uxlen>(b);
-        };
-        const Uxlen data =  (to_uxlen(const_container.at(addr  )) << CHAR_BIT) |
-                            (to_uxlen(const_container.at(addr+1)) << CHAR_BIT) |
-                            (to_uxlen(const_container.at(addr+2)) << CHAR_BIT) |
-                            (to_uxlen(const_container.at(addr+3))            );
+        if (extract_bits(byte_en, 0)) {
+          data |= to_uxlen(const_container.at(addr));
+        }
+        if (extract_bits(byte_en, 1)) {
+          data |= to_uxlen(const_container.at(addr+1)) << CHAR_BIT;
+        }
+        if (extract_bits(byte_en, 2)) {
+          data |= to_uxlen(const_container.at(addr+2)) << 2*CHAR_BIT;
+        }
+        if (extract_bits(byte_en, 3)) {
+          data |= to_uxlen(const_container.at(addr+3)) << 3*CHAR_BIT;
+        }
         return data;
       } catch (const std::out_of_range&) {
         throw Errors::Illegal_addr(addr, "read address is out of data_mem range.");
