@@ -10,6 +10,12 @@ class Memory {
     virtual Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) = 0;
 
     virtual ~Memory() = default;
+
+    Memory(const Memory &) = delete;
+    Memory(const Memory &&) = delete;
+    Memory& operator=(Memory) = delete;
+
+    Memory() = default;
 };
 
 class Rf : public Memory {
