@@ -16,10 +16,11 @@ TEST_CASE("instr mem", "[INSTR_MEM]") {
 
   SECTION("out_of_range_read") {
     instr_container.push_back({});
+    REQUIRE_NOTHROW(instr_mem.read(0));
     REQUIRE_THROWS_AS(instr_mem.read(4), Errors::Illegal_addr);
   }
 
-  SECTION("simple 2 instr") {
+  SECTION("simple 2 reads") {
     const std::vector<Uxlen> data{0x01020304, 0x05060708};
     instr_container.push_back(data.at(0));
     instr_container.push_back(data.at(1));
@@ -27,8 +28,7 @@ TEST_CASE("instr mem", "[INSTR_MEM]") {
     REQUIRE(instr_mem.read(0) == data.at(0));
     REQUIRE(instr_mem.read(4) == data.at(1));
 
-    REQUIRE(instr_container.at(0) == data.at(0));
-    REQUIRE(instr_container.at(1) == data.at(1));
+    REQUIRE(instr_container == data);
   }
 
   SECTION("exception") {
