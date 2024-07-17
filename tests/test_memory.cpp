@@ -1,5 +1,6 @@
 #include "exception.hpp"
 #include "instr_mem.hpp"
+#include "data_mem.hpp"
 
 #define CATCH_CONFIG_MAIN
 
@@ -33,5 +34,68 @@ TEST_CASE("instr mem", "[INSTR_MEM]") {
 
   SECTION("exception") {
     REQUIRE_THROWS_AS(instr_mem.write(0, 0), Errors::Read_only);
+  }
+}
+
+using Byte = std::byte;
+using Cont = std::vector<Byte>;
+
+TEST_CASE("data_mem", "[DATA_MEM]") {
+  Cont container{};
+
+  Data_mem_wrap data_mem{container};
+
+  SECTION("uninitialized_write") {
+    REQUIRE_THROWS_AS(data_mem.write(0, 0), Errors::Illegal_addr);
+  }
+
+  SECTION("uninitialized_read") {
+    REQUIRE_THROWS_AS(data_mem.read(0, 0x1), Errors::Illegal_addr);
+  }
+
+  SECTION("out_of_range_read") {
+    container.push_back({});
+    REQUIRE_NOTHROW(data_mem.read(0, 0x1));
+    REQUIRE_THROWS_AS(data_mem.read(4), Errors::Illegal_addr);
+  }
+
+  SECTION("simple 2 instr") {
+    const Cont data{
+        Byte{0x1},
+        Byte{0x2},
+        Byte{0x3},
+        Byte{0x4},
+
+        Byte{0x5},
+        Byte{0x6},
+        Byte{0x7},
+        Byte{0x8},
+    };
+    container.push_back(data.at(0));
+    container.push_back(data.at(1));
+    container.push_back(data.at(2));
+    container.push_back(data.at(3));
+
+    container.push_back(data.at(4));
+    container.push_back(data.at(5));
+    container.push_back(data.at(6));
+    container.push_back(data.at(7));
+
+    SECTION("write") {
+      SECTION("be=0b0001") {
+        Cont new_data{data};
+        new_data[0] = Byte{0xf};
+        const unsigned int byte_en{0b0001};
+        data_mem.write(0, 0xf, byte_en);
+        REQUIRE(container == new_data);
+      }
+      SECTION("be=0b0010") {
+        Cont new_data{data};
+        new_data[1] = Byte{0xf};
+        const unsigned int byte_en{0b0010};
+        data_mem.write(0, 0xf << CHAR_BIT, byte_en);
+        REQUIRE(container == new_data);
+      }
+    }
   }
 }
