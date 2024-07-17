@@ -6,28 +6,32 @@
 #include "catch2/catch_test_macros.hpp"
 
 TEST_CASE("instr mem", "[INSTR_MEM]") {
-  std::vector<Uxlen> instr_container(2);
+  std::vector<Uxlen> instr_container{};
 
   Instr_mem_wrap instr_mem{instr_container};
 
   SECTION("uninitialized_read") {
-    REQUIRE(instr_mem.read(0) == 0);
-    REQUIRE(instr_mem.read(1) == 0);
+    REQUIRE_THROWS_AS(instr_mem.read(0), Errors::Illegal_addr);
   }
 
   SECTION("out_of_range_read") {
-    REQUIRE_THROWS_AS(instr_mem.read(2), Errors::Illegal_addr);
+    instr_container.push_back({});
+    REQUIRE_THROWS_AS(instr_mem.read(4), Errors::Illegal_addr);
   }
 
-  SECTION("simple") {
-    instr_container[0] = 1;
-    instr_container[1] = 2;
+  SECTION("simple 2 instr") {
+    const std::vector<Uxlen> data{0x01020304, 0x05060708};
+    instr_container.push_back(data.at(0));
+    instr_container.push_back(data.at(1));
 
-    REQUIRE(instr_mem.read(0) == 1);
-    REQUIRE(instr_mem.read(1) == 2);
+    REQUIRE(instr_mem.read(0) == data.at(0));
+    REQUIRE(instr_mem.read(4) == data.at(1));
+
+    REQUIRE(instr_container.at(0) == data.at(0));
+    REQUIRE(instr_container.at(1) == data.at(1));
   }
 
   SECTION("exception") {
-    REQUIRE_THROWS_AS(instr_mem.write(0, 3), Errors::Read_only);
+    REQUIRE_THROWS_AS(instr_mem.write(0, 0), Errors::Read_only);
   }
 }
