@@ -15,6 +15,8 @@ template <typename Container> requires requires (Container cont) {
 }
 class Instr_mem_wrap : public Memory {
   public:
+    using value_type = Uxlen;
+
     Instr_mem_wrap(Container &instr_container) : m_instr_container{instr_container} {}
 
     void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override {

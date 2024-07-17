@@ -11,10 +11,12 @@ class Data_mem_wrap : public Memory {
   public:
     Data_mem_wrap(Container &container) : m_container{container} {}
 
+    using value_type = std::byte;
+
     void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override {
       assert(((byte_en > 0) && (byte_en <= 0xf)) && "illegal byte_en when writing to data_mem");
       const auto to_byte = [](Uxlen data_) constexpr {
-        return std::byte{static_cast<uint8_t>(data_)};
+        return value_type{static_cast<uint8_t>(data_)};
       };
       try {
         if (extract_bits(byte_en, 0)) {
@@ -37,8 +39,8 @@ class Data_mem_wrap : public Memory {
     Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override {
       assert(((byte_en > 0) && (byte_en <= 0xf)) && "illegal byte_en when writing to data_mem");
       const auto &const_container{m_container};
-      const auto to_uxlen = [](std::byte b) constexpr {
-        return std::to_integer<Uxlen>(b);
+      const auto to_uxlen = [](value_type b) constexpr {
+        return static_cast<Uxlen>(b);
       };
       Uxlen data{};
       try {
