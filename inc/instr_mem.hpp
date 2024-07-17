@@ -11,9 +11,9 @@ template <typename Container> requires requires (Container cont) {
   { cont[0] } -> std::convertible_to<Uxlen>;
   { cont.at(0) } -> std::convertible_to<Uxlen>;
 }
-class Instr_mem : public Memory {
+class Instr_mem_wrap : public Memory {
   public:
-    Instr_mem(Container &instr_container) : m_instr_container{instr_container} {}
+    Instr_mem_wrap(Container &instr_container) : m_instr_container{instr_container} {}
 
     void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override {
       throw Errors::Read_only{"Write into instr_mem"};
