@@ -9,7 +9,7 @@
 TEST_CASE("instr mem", "[INSTR_MEM]") {
   std::vector<Uxlen> instr_container{};
 
-  Instr_mem_wrap instr_mem{instr_container};
+  Instr_mem_view instr_mem{instr_container};
 
   SECTION("uninitialized_read") {
     REQUIRE_THROWS_AS(instr_mem.read(0), Errors::Illegal_addr);
@@ -43,7 +43,7 @@ using Cont = std::vector<Byte>;
 TEST_CASE("data_mem", "[DATA_MEM]") {
   Cont container{};
 
-  Data_mem_wrap data_mem{container};
+  Data_mem_view data_mem{container};
 
   SECTION("uninitialized_write") {
     REQUIRE_THROWS_AS(data_mem.write(0, 0), Errors::Illegal_addr);

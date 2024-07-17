@@ -10,9 +10,9 @@ template <typename Container> requires requires (Container cont) {
   { cont.at(0) } -> std::convertible_to<std::byte>;
   { std::as_const(cont).at(0) } -> std::convertible_to<std::byte>;
 }
-class Data_mem_wrap : public Memory {
+class Data_mem_view : public Memory {
   public:
-    Data_mem_wrap(Container &container) : m_container{container} {}
+    Data_mem_view(Container &container) : m_container{container} {}
 
     using value_type = std::byte;
 
