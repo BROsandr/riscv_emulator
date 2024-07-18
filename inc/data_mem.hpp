@@ -46,7 +46,7 @@ class Data_mem_view : public Memory {
       const auto to_uxlen = [](value_type b) constexpr {
         return static_cast<Uxlen>(b);
       };
-      Uxlen data{};
+      Uxlen data{0};
       if (extract_bits(byte_en, 0)) {
         data |= to_uxlen(try_get(addr));
       }
