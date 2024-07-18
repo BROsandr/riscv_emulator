@@ -4,6 +4,9 @@
 #include "memory.hpp"
 
 #include <functional>
+#include <memory>
+
+#include <cassert>
 
 namespace spdlog {
   class logger;
@@ -11,8 +14,11 @@ namespace spdlog {
 
 class Core {
   public:
-    Core(Memory &instr_mem, Memory &data_mem, Memory &csr, Memory &rf, spdlog::logger &logger)
-        : m_instr_mem{instr_mem}, m_data_mem{data_mem}, m_csr{csr}, m_rf{rf}, m_logger{logger} {}
+    Core(Memory &instr_mem, Memory &data_mem, Memory &csr, Memory &rf,
+        std::shared_ptr<spdlog::logger> logger)
+        : m_instr_mem{instr_mem}, m_data_mem{data_mem}, m_csr{csr}, m_rf{rf}, m_logger{logger} {
+      assert(m_logger && "logger == nullptr in core");
+    }
     ~Core() = default;
 
     void request_irq() { this->m_irq_req = true; }
@@ -30,7 +36,7 @@ class Core {
     Memory &m_data_mem;
     Memory &m_csr;
     Memory &m_rf;
-    spdlog::logger &m_logger;
+    std::shared_ptr<spdlog::logger> m_logger{nullptr};
     Uxlen m_pc{0};
     constexpr Uxlen fetch_instruction() const {
       return m_data_mem.read(m_pc);

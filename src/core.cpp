@@ -288,13 +288,16 @@ void Core::cycle() {
   auto &pc = m_pc;
   auto return_from_irq = m_return_from_irq;
 
+  assert(m_logger && "logger == nullptr in core");
+  spdlog::logger &logger{*m_logger};
+
   switch (to_handler_type(instr_info.instruction)) {
     case Handler_type::type_calc_imm: handle_type_calc_imm(instr_info, rf); break;
     case Handler_type::type_calc_reg: handle_type_calc_reg(instr_info, rf); break;
     case Handler_type::type_store: handle_type_store(instr_info, rf,
-        data_mem, m_logger, m_pc); break;
+        data_mem, logger, m_pc); break;
     case Handler_type::type_load: handle_type_load(instr_info, rf,
-        data_mem, m_logger, m_pc); break;
+        data_mem, logger, m_pc); break;
     case Handler_type::type_branch: handle_type_branch(instr_info, rf, pc); return;
     case Handler_type::type_auipc: handle_type_auipc(instr_info, rf, pc); break;
     case Handler_type::type_lui: handle_type_lui(instr_info, rf); break;
