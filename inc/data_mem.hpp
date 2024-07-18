@@ -13,6 +13,9 @@ template <typename Container> requires requires (Container cont) {
 class Data_mem_view : public Memory {
   public:
     Data_mem_view(Container &container) : m_container{container} {}
+    Data_mem_view(const Data_mem_view&) = default;
+    Data_mem_view& operator=(Data_mem_view) = delete;
+    Data_mem_view(Data_mem_view&&) = delete;
 
     using value_type = std::byte;
 

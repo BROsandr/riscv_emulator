@@ -18,6 +18,9 @@ class Instr_mem_view : public Memory {
     using value_type = Uxlen;
 
     Instr_mem_view(const Container &instr_container) : m_instr_container{instr_container} {}
+    Instr_mem_view(const Instr_mem_view&) = default;
+    Instr_mem_view& operator=(Instr_mem_view) = delete;
+    Instr_mem_view(Instr_mem_view&&) = delete;
 
     void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override {
       throw Errors::Read_only{"Write into instr_mem"};
