@@ -26,10 +26,13 @@ namespace Lsu {
         }
 
       case Op::h:
+        assert(!(addr & 0b01) && "Misalignment");
         return (addr & 0b10) ? extract_bits(data, {31, 16}, true) :
             extract_bits(data, {15, 0}, true);
 
-      case Op::w: return data;
+      case Op::w:
+        assert(!(addr & 0b11) && "Misalignment");
+        return data;
 
       case Op::bu:
         switch (addr & 0b11) {
@@ -40,6 +43,7 @@ namespace Lsu {
         }
 
       case Op::hu:
+        assert(!(addr & 0b01) && "Misalignment");
         return (addr & 0b10) ? extract_bits(data, {31, 16}, false) :
             extract_bits(data, {15, 0}, false);
     }
@@ -48,10 +52,11 @@ namespace Lsu {
   }
 
   constexpr unsigned int get_be(Op op, std::size_t addr) {
+    const auto byte_offset{addr & 0b11};
     switch (op) {
-      case Op::b: case Op::bu: return 1 << (addr & 0b11);
-      case Op::h: case Op::hu: return (addr & 0b10) ? 0b1100 : 0b0011;
-      case Op::w             : return 0xf;
+      case Op::b: case Op::bu: return 1u      << byte_offset;
+      case Op::h: case Op::hu: return 0b0011u << byte_offset;
+      case Op::w             : return 0xfu    << byte_offset;
     }
     assert(0 && "Illegal lsu op");
   }
