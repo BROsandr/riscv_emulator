@@ -49,10 +49,10 @@ namespace Lsu {
 
   constexpr unsigned int get_be(Op op, std::size_t addr) {
     switch (op) {
-      case Op::b: return 1 << (addr & 0b11);
-      case Op::h: return (addr & 0b10) ? 0b1100 : 0b0011;
-
-      default: assert(0 && "Other case items have no sense");
+      case Op::b: case Op::bu: return 1 << (addr & 0b11);
+      case Op::h: case Op::hu: return (addr & 0b10) ? 0b1100 : 0b0011;
+      case Op::w             : return 0xf;
     }
+    assert(0 && "Illegal lsu op");
   }
 }
