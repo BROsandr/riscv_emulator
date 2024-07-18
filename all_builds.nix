@@ -13,6 +13,10 @@ let
     ];
 
     hardeningDisable = ["all"];
+
+    shellHook = ''
+      ln -fs ./build/compile_commands.json compile_commands.json
+    '';
   };
 in
 {
