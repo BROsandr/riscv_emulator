@@ -2,6 +2,8 @@ project('riscv_emulator', 'cpp', default_options : ['cpp_std=c++23'])
 
 incdir = [include_directories('inc')]
 catch_dep = dependency('catch2-with-main')
+spdlog_dep = dependency('spdlog')
+dependencies = [catch_dep, spdlog_dep]
 
 src_test_files = {
     'test_alu.cpp' : [
@@ -26,6 +28,6 @@ foreach test_file, src_files: src_test_files
   exe = executable(test_file, sources : [test_path] + src_path,
       include_directories : incdir,
       cpp_args : [],
-      dependencies : catch_dep)
+      dependencies : dependencies)
   test(test_file, exe)
 endforeach

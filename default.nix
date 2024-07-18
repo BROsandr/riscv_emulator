@@ -28,5 +28,7 @@ stdenv.mkDerivation {
     pkg-config
   ];
 
-  buildInputs = [ ];
+  buildInputs = with pkgs; [
+    spdlog.dev
+  ];
 }
