@@ -139,5 +139,47 @@ TEST_CASE("data_mem", "[DATA_MEM]") {
         }
       }
     }
+    SECTION("write-read") {
+      for (unsigned int byte_en{1}; byte_en < (0xf + 1); ++byte_en) {
+        SECTION("be=" + std::to_string(byte_en)) {
+          Cont new_data{data};
+          Uxlen write_word{};
+          std::vector<Byte> test_data{Byte{0xf},Byte{0xf}, Byte{0xf}, Byte{0xf}};
+          if (extract_bits(byte_en, 0)) {
+            new_data[0] = test_data[0];
+            write_word |= static_cast<Uxlen>(test_data[0]);
+          }
+          if (extract_bits(byte_en, 1)) {
+            new_data[1] = test_data[1];
+            write_word |= static_cast<Uxlen>(test_data[1]) << CHAR_BIT;
+          }
+          if (extract_bits(byte_en, 2)) {
+            new_data[2] = test_data[2];
+            write_word |= static_cast<Uxlen>(test_data[2]) << 2 * CHAR_BIT;
+          }
+          if (extract_bits(byte_en, 3)) {
+            new_data[3] = test_data[3];
+            write_word |= static_cast<Uxlen>(test_data[3]) << 3 * CHAR_BIT;
+          }
+          data_mem.write(0, write_word, byte_en);
+                    Uxlen read_word{0};
+
+          if (extract_bits(byte_en, 0)) {
+            read_word |= static_cast<Uxlen>(new_data[0]);
+          }
+          if (extract_bits(byte_en, 1)) {
+            read_word |= static_cast<Uxlen>(new_data[1]) << CHAR_BIT;
+          }
+          if (extract_bits(byte_en, 2)) {
+            read_word |= static_cast<Uxlen>(new_data[2]) << 2 * CHAR_BIT;
+          }
+          if (extract_bits(byte_en, 3)) {
+            read_word |= static_cast<Uxlen>(new_data[3]) << 3 * CHAR_BIT;
+          }
+          REQUIRE(data_mem.read(0, byte_en) == read_word);
+          REQUIRE(container == new_data);
+        }
+      }
+    }
   }
 }
