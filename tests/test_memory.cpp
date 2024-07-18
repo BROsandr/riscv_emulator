@@ -1,6 +1,9 @@
 #include "exception.hpp"
 #include "instr_mem.hpp"
 #include "data_mem.hpp"
+#include "riscv_algos.hpp"
+
+#include <climits>
 
 #define CATCH_CONFIG_MAIN
 
@@ -88,33 +91,30 @@ TEST_CASE("data_mem", "[DATA_MEM]") {
     container.push_back(data.at(7));
 
     SECTION("write") {
-      SECTION("be=0b0001") {
-        Cont new_data{data};
-        new_data[0] = Byte{0xf};
-        const unsigned int byte_en{0b0001};
-        data_mem.write(0, 0xf, byte_en);
-        REQUIRE(container == new_data);
-      }
-      SECTION("be=0b0010") {
-        Cont new_data{data};
-        new_data[1] = Byte{0xf};
-        const unsigned int byte_en{0b0010};
-        data_mem.write(0, 0xf << CHAR_BIT, byte_en);
-        REQUIRE(container == new_data);
-      }
-      SECTION("be=0b0100") {
-        Cont new_data{data};
-        new_data[2] = Byte{0xf};
-        const unsigned int byte_en{0b0100};
-        data_mem.write(0, 0xf << 2*CHAR_BIT, byte_en);
-        REQUIRE(container == new_data);
-      }
-      SECTION("be=0b1000") {
-        Cont new_data{data};
-        new_data[3] = Byte{0xf};
-        const unsigned int byte_en{0b1000};
-        data_mem.write(0, 0xf << 3*CHAR_BIT, byte_en);
-        REQUIRE(container == new_data);
+      for (unsigned int byte_en{1}; byte_en < (0xf + 1); ++byte_en) {
+        SECTION("be=" + std::to_string(byte_en)) {
+          Cont new_data{data};
+          Uxlen write_word{};
+          std::vector<Byte> test_data{Byte{0xf},Byte{0xf}, Byte{0xf}, Byte{0xf}};
+          if (extract_bits(byte_en, 0)) {
+            new_data[0] = test_data[0];
+            write_word |= static_cast<Uxlen>(test_data[0]);
+          }
+          if (extract_bits(byte_en, 1)) {
+            new_data[1] = test_data[1];
+            write_word |= static_cast<Uxlen>(test_data[1]) << CHAR_BIT;
+          }
+          if (extract_bits(byte_en, 2)) {
+            new_data[2] = test_data[2];
+            write_word |= static_cast<Uxlen>(test_data[2]) << 2 * CHAR_BIT;
+          }
+          if (extract_bits(byte_en, 3)) {
+            new_data[3] = test_data[3];
+            write_word |= static_cast<Uxlen>(test_data[3]) << 3 * CHAR_BIT;
+          }
+          data_mem.write(0, write_word, byte_en);
+          REQUIRE(container == new_data);
+        }
       }
     }
   }
