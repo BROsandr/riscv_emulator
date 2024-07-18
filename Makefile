@@ -14,6 +14,7 @@ CC_DEBUG_FLAGS?=\
 		-fstack-protector         \
 		-Wsign-conversion         \
 		-Weffc++                  \
+		-Winvalid-constexpr       \
 
 BUILD_TYPE?=debugoptimized
 ifeq (${BUILD_TYPE},debugoptimized)
