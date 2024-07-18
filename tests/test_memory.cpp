@@ -96,6 +96,20 @@ TEST_CASE("data_mem", "[DATA_MEM]") {
         data_mem.write(0, 0xf << CHAR_BIT, byte_en);
         REQUIRE(container == new_data);
       }
+      SECTION("be=0b0100") {
+        Cont new_data{data};
+        new_data[2] = Byte{0xf};
+        const unsigned int byte_en{0b0100};
+        data_mem.write(0, 0xf << 2*CHAR_BIT, byte_en);
+        REQUIRE(container == new_data);
+      }
+      SECTION("be=0b1000") {
+        Cont new_data{data};
+        new_data[3] = Byte{0xf};
+        const unsigned int byte_en{0b1000};
+        data_mem.write(0, 0xf << 3*CHAR_BIT, byte_en);
+        REQUIRE(container == new_data);
+      }
     }
   }
 }
