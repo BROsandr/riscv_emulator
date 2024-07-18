@@ -17,7 +17,10 @@ class Data_mem_view : public Memory {
     using value_type = std::byte;
 
     void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override {
-      assert(((byte_en > 0) && (byte_en <= 0xf)) && "illegal byte_en when writing to data_mem");
+      if(m_assured_aligment && is_misaliged(addr, byte_en)) {
+        throw Errors::Misalignment{addr, "illegal byte_en (" +
+            std::to_string(byte_en) + ") when reading from data_mem"};
+      }
       const auto to_byte = [](Uxlen data_) constexpr {
         return value_type{static_cast<uint8_t>(data_)};
       };
@@ -36,7 +39,10 @@ class Data_mem_view : public Memory {
     }
 
     Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override {
-      assert(((byte_en > 0) && (byte_en <= 0xf)) && "illegal byte_en when writing to data_mem");
+      if(m_assured_aligment && is_misaliged(addr, byte_en)) {
+        throw Errors::Misalignment{addr, "illegal byte_en (" +
+            std::to_string(byte_en) + ") when writing to data_mem"};
+      }
       const auto to_uxlen = [](value_type b) constexpr {
         return static_cast<Uxlen>(b);
       };
@@ -55,9 +61,14 @@ class Data_mem_view : public Memory {
       }
       return data;
     }
+    bool m_assured_aligment{true};
 
   private:
     Container &m_container;
+
+    constexpr bool is_misaliged(std::size_t addr, unsigned int byte_en = 0xf) const {
+      return !((byte_en > 0) && (byte_en <= 0xf));
+    }
 
     constexpr void try_set(std::size_t addr, value_type val) {
       try {
