@@ -15,6 +15,15 @@ namespace Lsu {
     w
   };
 
+  constexpr bool is_misaligned(Op op, std::size_t addr) {
+    switch (op) {
+      case Op::bu: case Op::b: return false;
+      case Op::hu: case Op::h: return addr & 0b01;
+      case Op::w             : return addr & 0b11;
+    }
+    assert(0 && "Illegal lsu op");
+  }
+
   constexpr Uxlen transform_data(Op op, std::size_t addr, Uxlen data) {
     switch (op) {
       case Op::b:
@@ -60,4 +69,17 @@ namespace Lsu {
     }
     assert(0 && "Illegal lsu op");
   }
+}
+
+constexpr std::string to_string(Lsu::Op op) {
+  using enum Lsu::Op;
+  switch (op) {
+    case b : return "b";
+    case bu: return "bu";
+    case h : return "h";
+    case hu: return "hu";
+    case w : return "w";
+  }
+
+  assert(0 && "Illegal lsu op");
 }

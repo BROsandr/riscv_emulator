@@ -4,6 +4,7 @@
 #include "csr.hpp"
 #include "decoder.hpp"
 #include "configurator.hpp"
+#include "exception.hpp"
 #include "lsu.hpp"
 #include "riscv.hpp"
 
@@ -191,12 +192,19 @@ namespace {
   constexpr void handle_type_store(const Decoder::Instruction_info &instr_info, Memory &rf, Memory &data_mem) {
     const std::size_t addr{rf.read(instr_info.rs1) + instr_info.imm};
     const Uxlen data{rf.read(instr_info.rs2)};
-    data_mem.write(addr, data, Lsu::get_be(to_lsu_op(instr_info.instruction), addr));
+    const auto lsu_op = to_lsu_op(instr_info.instruction);
+    if (Lsu::is_misaligned(lsu_op, addr)) {
+      throw Errors::Misalignment{addr, "lsu_op: " + to_string(lsu_op)};
+    }
+    data_mem.write(addr, data, Lsu::get_be(lsu_op, addr));
   }
 
   constexpr void handle_type_load(const Decoder::Instruction_info &instr_info, Memory &rf, Memory &data_mem) {
     const std::size_t addr{rf.read(instr_info.rs1) + instr_info.imm};
     const auto lsu_op = to_lsu_op(instr_info.instruction);
+    if (Lsu::is_misaligned(lsu_op, addr)) {
+      throw Errors::Misalignment{addr, "lsu_op: " + to_string(lsu_op)};
+    }
     Uxlen data{data_mem.read(addr, Lsu::get_be(lsu_op, addr))};
     data = Lsu::transform_data(lsu_op, addr, data);
     rf.write(instr_info.rd, data);

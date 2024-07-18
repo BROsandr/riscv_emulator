@@ -28,4 +28,13 @@ namespace Errors {
     Read_only(const std::string &message = "")
         : Error("Write to read only memory : " + message) {}
   };
+
+  struct Misalignment : public Error {
+    using Addr = std::size_t;
+    Addr m_addr{};
+
+    Misalignment(Addr addr, const std::string &message = "")
+        : Error("Misaligment. Addr:" + std::to_string(addr) + " : " + message),
+          m_addr{addr} {}
+  };
 }
