@@ -4,9 +4,10 @@
 #include "csr.hpp"
 #include "decoder.hpp"
 #include "configurator.hpp"
-#include "exception.hpp"
 #include "lsu.hpp"
 #include "riscv.hpp"
+
+#include "spdlog/logger.h"
 
 #include <cassert>
 
@@ -189,21 +190,25 @@ namespace {
     rf.write(instr_info.rd, alu_res);
   }
 
-  constexpr void handle_type_store(const Decoder::Instruction_info &instr_info, Memory &rf, Memory &data_mem) {
+  constexpr void handle_type_store(const Decoder::Instruction_info &instr_info, Memory &rf,
+      Memory &data_mem, spdlog::logger &logger, auto pc) {
     const std::size_t addr{rf.read(instr_info.rs1) + instr_info.imm};
     const Uxlen data{rf.read(instr_info.rs2)};
     const auto lsu_op = to_lsu_op(instr_info.instruction);
     if (Lsu::is_misaligned(lsu_op, addr)) {
-      throw Errors::Misalignment{addr, "lsu_op: " + to_string(lsu_op)};
+      logger.warn("LSU. Store. Misalignment. Continuing. PC: {:x}, addr: {:x}, LSU op: {}.",
+          pc, addr, to_string(lsu_op));
     }
     data_mem.write(addr, data, Lsu::get_be(lsu_op, addr));
   }
 
-  constexpr void handle_type_load(const Decoder::Instruction_info &instr_info, Memory &rf, Memory &data_mem) {
+  constexpr void handle_type_load(const Decoder::Instruction_info &instr_info, Memory &rf,
+      Memory &data_mem, spdlog::logger &logger, auto pc) {
     const std::size_t addr{rf.read(instr_info.rs1) + instr_info.imm};
     const auto lsu_op = to_lsu_op(instr_info.instruction);
     if (Lsu::is_misaligned(lsu_op, addr)) {
-      throw Errors::Misalignment{addr, "lsu_op: " + to_string(lsu_op)};
+      logger.warn("LSU. Load. Misalignment. Continuing. PC: {:x}, addr: {:x}, LSU op: {}.",
+          pc, addr, to_string(lsu_op));
     }
     Uxlen data{data_mem.read(addr, Lsu::get_be(lsu_op, addr))};
     data = Lsu::transform_data(lsu_op, addr, data);
@@ -286,8 +291,10 @@ void Core::cycle() {
   switch (to_handler_type(instr_info.instruction)) {
     case Handler_type::type_calc_imm: handle_type_calc_imm(instr_info, rf); break;
     case Handler_type::type_calc_reg: handle_type_calc_reg(instr_info, rf); break;
-    case Handler_type::type_store: handle_type_store(instr_info, rf, data_mem); break;
-    case Handler_type::type_load: handle_type_load(instr_info, rf, data_mem); break;
+    case Handler_type::type_store: handle_type_store(instr_info, rf,
+        data_mem, m_logger, m_pc); break;
+    case Handler_type::type_load: handle_type_load(instr_info, rf,
+        data_mem, m_logger, m_pc); break;
     case Handler_type::type_branch: handle_type_branch(instr_info, rf, pc); return;
     case Handler_type::type_auipc: handle_type_auipc(instr_info, rf, pc); break;
     case Handler_type::type_lui: handle_type_lui(instr_info, rf); break;
