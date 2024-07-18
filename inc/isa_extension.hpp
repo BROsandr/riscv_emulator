@@ -27,15 +27,15 @@ class Isa_ext_container {
     constexpr bool operator[](Isa_extension extension) const {
       return m_extensions[static_cast<std::size_t>(extension)];
     }
-    constexpr Base_bitset::reference operator[](Isa_extension extension) {
+    Base_bitset::reference operator[](Isa_extension extension) {
       return m_extensions[static_cast<std::size_t>(extension)];
     }
 
-    constexpr Isa_ext_container& set() {
+    Isa_ext_container& set() {
       m_extensions.set();
       return *this;
     }
-    constexpr Isa_ext_container& set(Isa_extension extension, bool value = true) {
+    Isa_ext_container& set(Isa_extension extension, bool value = true) {
       m_extensions.set(static_cast<std::size_t>(extension), value);
       return *this;
     }

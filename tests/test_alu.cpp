@@ -7,7 +7,7 @@
 #include <limits>
 
 namespace {
-  constexpr std::pair<Uxlen, bool> calculate(Alu::Op op, Uxlen a, Uxlen b) {
+  std::pair<Uxlen, bool> calculate(Alu::Op op, Uxlen a, Uxlen b) {
     return {calc_result(op, a, b), calc_flag(op, a, b)};
   }
 }

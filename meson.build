@@ -1,4 +1,4 @@
-project('riscv_emulator', 'cpp', default_options : ['cpp_std=c++23'])
+project('riscv_emulator', 'cpp', default_options : ['cpp_std=c++20'])
 
 incdir = [include_directories('inc')]
 catch_dep = dependency('catch2-with-main')
