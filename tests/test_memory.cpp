@@ -59,6 +59,12 @@ TEST_CASE("data_mem", "[DATA_MEM]") {
     REQUIRE_THROWS_AS(data_mem.read(4), Errors::Illegal_addr);
   }
 
+  SECTION("misalignment") {
+    data_mem.m_assured_aligment = true;
+    container.push_back({});
+    REQUIRE_THROWS_AS(data_mem.read(0, 0b10000), Errors::Misalignment);
+  }
+
   SECTION("simple 2 instr") {
     const Cont data{
         Byte{0x1},
