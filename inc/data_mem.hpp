@@ -88,3 +88,40 @@ class Data_mem_view : public Memory {
       }
     }
 };
+
+template <typename Viewed>
+class Ranged_view {
+  public:
+    Ranged_view(Viewed &viewed, std::size_t start_addr, std::size_t size)
+        : m_viewed{viewed}, m_start_addr{start_addr}, m_size{size} {}
+    Ranged_view(const Ranged_view&) = default;
+    Ranged_view& operator=(Ranged_view) = delete;
+    Ranged_view(Ranged_view&&) = delete;
+
+    auto& operator[](const std::size_t& addr) {
+      return m_viewed[addr];
+    }
+    auto& operator[](std::size_t&& addr) {
+      return m_viewed[std::move(addr)];
+    }
+
+    auto& at(const std::size_t& addr) {
+      assert_inside_range(addr);
+      return m_viewed[addr];
+    }
+    const auto& at(const std::size_t& addr) const {
+      assert_inside_range(addr);
+      return m_viewed[addr];
+    }
+
+  private:
+    constexpr void assert_inside_range(std::size_t addr) const {
+      if ((addr < m_start_addr) || (addr >= (m_start_addr + m_size))) {
+        throw Errors::Illegal_addr{addr, "addr is out of range"};
+      }
+    }
+
+    Viewed &m_viewed;
+    const std::size_t m_start_addr;
+    const std::size_t m_size;
+};

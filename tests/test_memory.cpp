@@ -5,6 +5,8 @@
 
 #include <climits>
 
+#include <map>
+
 #define CATCH_CONFIG_MAIN
 
 #include "catch2/catch_test_macros.hpp"
@@ -41,9 +43,9 @@ TEST_CASE("instr mem", "[INSTR_MEM]") {
 }
 
 using Byte = std::byte;
-using Cont = std::vector<Byte>;
 
 TEST_CASE("data_mem", "[DATA_MEM]") {
+  using Cont = std::vector<Byte>;
   Cont container{};
 
   Data_mem_view data_mem{container};
@@ -181,5 +183,45 @@ TEST_CASE("data_mem", "[DATA_MEM]") {
         }
       }
     }
+  }
+}
+
+TEST_CASE("ranged view", "[RANGED_VIEW]") {
+  using Cont = std::map<std::size_t, Byte>;
+  Cont container{};
+  Ranged_view ranged_cont{container, 4, 11 - 4 + 1};
+
+  Data_mem_view data_mem{ranged_cont};
+
+  SECTION("uninitialized_write") {
+    REQUIRE_THROWS_AS(data_mem.write(0, 0), Errors::Illegal_addr);
+  }
+
+  SECTION("uninitialized_read") {
+    REQUIRE_THROWS_AS(data_mem.read(0, 0x1), Errors::Illegal_addr);
+  }
+
+  SECTION("out_of_range") {
+    container[4] = Byte{1};
+    container[5] = Byte{2};
+    container[6] = Byte{3};
+    container[7] = Byte{4};
+    container[8] = Byte{5};
+    container[9] = Byte{6};
+    container[10] = Byte{7};
+    container[11] = Byte{8};
+    REQUIRE_THROWS_AS(data_mem.read(0, 0xf), Errors::Illegal_addr);
+    REQUIRE_THROWS_AS(data_mem.read(3, 0xf), Errors::Illegal_addr);
+    REQUIRE(data_mem.read(1) == 0x04030201);
+    REQUIRE(data_mem.read(2) == 0x08070605);
+  }
+
+  SECTION("misalignment") {
+    data_mem.m_assured_aligment = true;
+    container[4] = {};
+    container[5] = {};
+    container[6] = {};
+    container[7] = {};
+    REQUIRE_THROWS_AS(data_mem.read(1, 0b10000), Errors::Misalignment);
   }
 }
