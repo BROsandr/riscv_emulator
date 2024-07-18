@@ -117,5 +117,27 @@ TEST_CASE("data_mem", "[DATA_MEM]") {
         }
       }
     }
+
+    SECTION("read") {
+      for (unsigned int byte_en{1}; byte_en < (0xf + 1); ++byte_en) {
+        SECTION("be=" + std::to_string(byte_en)) {
+          Uxlen read_word{0};
+          if (extract_bits(byte_en, 0)) {
+            read_word |= static_cast<Uxlen>(data[0]);
+          }
+          if (extract_bits(byte_en, 1)) {
+            read_word |= static_cast<Uxlen>(data[1]) << CHAR_BIT;
+          }
+          if (extract_bits(byte_en, 2)) {
+            read_word |= static_cast<Uxlen>(data[2]) << 2 * CHAR_BIT;
+          }
+          if (extract_bits(byte_en, 3)) {
+            read_word |= static_cast<Uxlen>(data[3]) << 3 * CHAR_BIT;
+          }
+          REQUIRE(data_mem.read(0, byte_en) == read_word);
+          REQUIRE(container == data);
+        }
+      }
+    }
   }
 }
