@@ -18,12 +18,14 @@ TEST_CASE("instr mem", "[INSTR_MEM]") {
 
   SECTION("uninitialized_read") {
     REQUIRE_THROWS_AS(instr_mem.read(0), Errors::Illegal_addr);
+    REQUIRE(instr_container.empty());
   }
 
   SECTION("out_of_range_read") {
     instr_container.push_back({});
     REQUIRE_NOTHROW(instr_mem.read(0));
     REQUIRE_THROWS_AS(instr_mem.read(4), Errors::Illegal_addr);
+    REQUIRE(instr_container.size() == 1);
   }
 
   SECTION("simple 2 reads") {
@@ -39,6 +41,7 @@ TEST_CASE("instr mem", "[INSTR_MEM]") {
 
   SECTION("exception") {
     REQUIRE_THROWS_AS(instr_mem.write(0, 0), Errors::Read_only);
+    REQUIRE(instr_container.empty());
   }
 }
 
@@ -52,22 +55,29 @@ TEST_CASE("data_mem", "[DATA_MEM]") {
 
   SECTION("uninitialized_write") {
     REQUIRE_NOTHROW(data_mem.write(0, 0));
+    REQUIRE(container.size() == 4);
   }
 
   SECTION("uninitialized_read") {
     REQUIRE_THROWS_AS(data_mem.read(0, 0x1), Errors::Illegal_addr);
+    REQUIRE(container.empty());
   }
 
   SECTION("out_of_range_read") {
     container[0] = {};
     REQUIRE_NOTHROW(data_mem.read(0, 0x1));
     REQUIRE_THROWS_AS(data_mem.read(4), Errors::Illegal_addr);
+    REQUIRE(container.size() == 1);
   }
 
   SECTION("misalignment") {
     data_mem.m_assured_aligment = true;
-    container = {};
+    container[0] = {};
+    container[1] = {};
+    container[2] = {};
+    container[3] = {};
     REQUIRE_THROWS_AS(data_mem.read(0, 0b10000), Errors::Misalignment);
+    REQUIRE(container.size() == 4);
   }
 
   SECTION("simple 2 instr") {
@@ -196,10 +206,12 @@ TEST_CASE("ranged view", "[RANGED_VIEW]") {
 
   SECTION("uninitialized_write") {
     REQUIRE_NOTHROW(ranged_cont.write(4, 0));
+    REQUIRE(container.size() == 4);
   }
 
   SECTION("uninitialized_read") {
     REQUIRE_THROWS_AS(ranged_cont.read(4, 0x1), Errors::Illegal_addr);
+    REQUIRE(container.empty());
   }
 
   SECTION("out_of_range") {
@@ -215,6 +227,7 @@ TEST_CASE("ranged view", "[RANGED_VIEW]") {
     REQUIRE_THROWS_AS(ranged_cont.read(12, 0xf), Errors::Illegal_addr);
     REQUIRE(ranged_cont.read(4) == 0x04030201);
     REQUIRE(ranged_cont.read(8) == 0x08070605);
+    REQUIRE(container.size() == 8);
   }
 
   SECTION("throw_when_read_before_write") {
@@ -234,6 +247,7 @@ TEST_CASE("ranged view", "[RANGED_VIEW]") {
     REQUIRE(container[5] == Byte{6});
     REQUIRE(container[6] == Byte{7});
     REQUIRE(container[7] == Byte{8});
+    REQUIRE(container.size() == 8);
   }
 
   SECTION("misalignment") {
@@ -243,5 +257,6 @@ TEST_CASE("ranged view", "[RANGED_VIEW]") {
     container[2] = {};
     container[3] = {};
     REQUIRE_THROWS_AS(ranged_cont.read(4, 0b10000), Errors::Misalignment);
+    REQUIRE(container.size() == 4);
   }
 }
