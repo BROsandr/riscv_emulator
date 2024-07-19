@@ -117,7 +117,8 @@ class Ranged_view {
   private:
     constexpr void assert_inside_range(std::size_t addr) const {
       if ((addr < m_start_addr) || (addr >= (m_start_addr + m_size))) {
-        throw Errors::Illegal_addr{addr, "addr is out of range"};
+        throw Errors::Illegal_addr{addr, "addr is out of range. start_addr: " +
+            std::to_string(m_start_addr) + ", size: " + std::to_string(m_size)};
       }
     }
 
