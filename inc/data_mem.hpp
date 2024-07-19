@@ -5,15 +5,13 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include <map>
 
-template <typename Container> requires requires (Container cont) {
-  { cont[0] } -> std::convertible_to<std::byte>;
-  { cont.at(0) } -> std::convertible_to<std::byte>;
-  { std::as_const(cont).at(0) } -> std::convertible_to<std::byte>;
-}
+template <typename Key, typename V>
 class Data_mem_view : public Memory {
   public:
-    Data_mem_view(Container &container) : m_container{container} {}
+    using Map = std::map<Key, V>;
+    Data_mem_view(Map &container) : m_container{container} {}
     Data_mem_view(const Data_mem_view&) = default;
     Data_mem_view& operator=(Data_mem_view) = delete;
     Data_mem_view(Data_mem_view&&) = delete;
@@ -29,16 +27,16 @@ class Data_mem_view : public Memory {
         return value_type{static_cast<uint8_t>(data_)};
       };
       if (extract_bits(byte_en, 0)) {
-        try_set(addr, to_byte(extract_bits(data, {7,0})));
+        m_container.insert_or_assign(addr, to_byte(extract_bits(data, {7,0})));
       }
       if (extract_bits(byte_en, 1)) {
-        try_set(addr+1, to_byte(extract_bits(data, {15,8})));
+        m_container.insert_or_assign(addr+1, to_byte(extract_bits(data, {15,8})));
       }
       if (extract_bits(byte_en, 2)) {
-        try_set(addr+2, to_byte(extract_bits(data, {23,16})));
+        m_container.insert_or_assign(addr+2, to_byte(extract_bits(data, {23,16})));
       }
       if (extract_bits(byte_en, 3)) {
-        try_set(addr+3, to_byte(extract_bits(data, {31,24})));
+        m_container.insert_or_assign(addr+3, to_byte(extract_bits(data, {31,24})));
       }
     }
 
@@ -68,19 +66,12 @@ class Data_mem_view : public Memory {
     bool m_assured_aligment{true};
 
   private:
-    Container &m_container;
+    Map &m_container;
 
     constexpr bool is_misaliged(std::size_t addr, unsigned int byte_en = 0xf) const {
       return !((byte_en > 0) && (byte_en <= 0xf));
     }
 
-    constexpr void try_set(std::size_t addr, value_type val) {
-      try {
-        m_container.at(addr) = val;
-      } catch (const std::out_of_range&) {
-        throw Errors::Illegal_addr(addr, "write address is out of data_mem range.");
-      }
-    }
     constexpr value_type try_get(std::size_t addr) const {
       try {
         return std::as_const(m_container).at(addr);

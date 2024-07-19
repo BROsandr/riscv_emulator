@@ -51,7 +51,7 @@ TEST_CASE("data_mem", "[DATA_MEM]") {
   Data_mem_view data_mem{container};
 
   SECTION("uninitialized_write") {
-    REQUIRE_THROWS_AS(data_mem.write(0, 0), Errors::Illegal_addr);
+    REQUIRE_NOTHROW(data_mem.write(0, 0));
   }
 
   SECTION("uninitialized_read") {
@@ -194,7 +194,7 @@ TEST_CASE("ranged view", "[RANGED_VIEW]") {
   Data_mem_view data_mem{ranged_cont};
 
   SECTION("uninitialized_write") {
-    REQUIRE_THROWS_AS(data_mem.write(0, 0), Errors::Illegal_addr);
+    REQUIRE_NOTHROW(data_mem.write(0, 0));
   }
 
   SECTION("uninitialized_read") {
