@@ -49,6 +49,9 @@ class Ranged_mem_view : public Memory {
     Memory &m_memory;
     const std::size_t m_start_addr;
     const std::size_t m_size;
+    constexpr std::size_t get_end_addr() const {
+      return m_start_addr + m_size - 1;
+    }
 };
 
 class Rf : public Memory {
