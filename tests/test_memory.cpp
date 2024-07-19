@@ -45,7 +45,7 @@ TEST_CASE("instr mem", "[INSTR_MEM]") {
 using Byte = std::byte;
 
 TEST_CASE("data_mem", "[DATA_MEM]") {
-  using Cont = std::vector<Byte>;
+  using Cont = std::map<std::size_t, Byte>;
   Cont container{};
 
   Data_mem_view data_mem{container};
@@ -59,38 +59,38 @@ TEST_CASE("data_mem", "[DATA_MEM]") {
   }
 
   SECTION("out_of_range_read") {
-    container.push_back({});
+    container[0] = {};
     REQUIRE_NOTHROW(data_mem.read(0, 0x1));
     REQUIRE_THROWS_AS(data_mem.read(4), Errors::Illegal_addr);
   }
 
   SECTION("misalignment") {
     data_mem.m_assured_aligment = true;
-    container.push_back({});
+    container = {};
     REQUIRE_THROWS_AS(data_mem.read(0, 0b10000), Errors::Misalignment);
   }
 
   SECTION("simple 2 instr") {
-    const Cont data{
-        Byte{0x1},
-        Byte{0x2},
-        Byte{0x3},
-        Byte{0x4},
+    Cont data{};
+    data[0] = Byte{0x1},
+    data[1] = Byte{0x2},
+    data[2] = Byte{0x3},
+    data[3] = Byte{0x4},
 
-        Byte{0x5},
-        Byte{0x6},
-        Byte{0x7},
-        Byte{0x8},
-    };
-    container.push_back(data.at(0));
-    container.push_back(data.at(1));
-    container.push_back(data.at(2));
-    container.push_back(data.at(3));
+    data[4] = Byte{0x5},
+    data[5] = Byte{0x6},
+    data[6] = Byte{0x7},
+    data[7] = Byte{0x8},
 
-    container.push_back(data.at(4));
-    container.push_back(data.at(5));
-    container.push_back(data.at(6));
-    container.push_back(data.at(7));
+    container[0] = data.at(0);
+    container[1] = data.at(1);
+    container[2] = data.at(2);
+    container[3] = data.at(3);
+
+    container[4] = data.at(4);
+    container[5] = data.at(5);
+    container[6] = data.at(6);
+    container[7] = data.at(7);
 
     SECTION("write") {
       for (unsigned int byte_en{1}; byte_en < (0xf + 1); ++byte_en) {

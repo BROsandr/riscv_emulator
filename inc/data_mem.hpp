@@ -3,6 +3,7 @@
 #include "exception.hpp"
 
 #include <stdexcept>
+#include <string>
 #include <utility>
 
 template <typename Container> requires requires (Container cont) {
@@ -113,7 +114,7 @@ class Ranged_view {
     }
     const auto& at(const std::size_t& addr) const {
       assert_inside_range(addr);
-      return m_viewed[addr];
+      return m_viewed.at(addr);
     }
 
   private:
