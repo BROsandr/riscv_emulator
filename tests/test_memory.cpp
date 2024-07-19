@@ -189,9 +189,10 @@ TEST_CASE("data_mem", "[DATA_MEM]") {
 TEST_CASE("ranged view", "[RANGED_VIEW]") {
   using Cont = std::map<std::size_t, Byte>;
   Cont container{};
-  Ranged_view ranged_cont{container, 4, 11 - 4 + 1};
 
-  Data_mem_view data_mem{ranged_cont};
+  Data_mem_view data_mem{container};
+
+  Ranged_mem_view ranged_cont{data_mem, 4, 11 - 4 + 1};
 
   SECTION("uninitialized_write") {
     REQUIRE_NOTHROW(data_mem.write(0, 0));

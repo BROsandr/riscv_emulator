@@ -1,6 +1,7 @@
 #pragma once
 
 #include "riscv.hpp"
+#include "exception.hpp"
 
 #include <vector>
 
@@ -16,6 +17,38 @@ class Memory {
     Memory& operator=(Memory) = delete;
 
     Memory() = default;
+};
+
+
+class Ranged_mem_view : public Memory {
+  public:
+    Ranged_mem_view(Memory &memory, std::size_t start_addr, std::size_t size)
+        : m_memory{memory}, m_start_addr{start_addr}, m_size{size} {}
+    Ranged_mem_view(const Ranged_mem_view& that)
+        : m_memory{that.m_memory}, m_start_addr{that.m_start_addr}, m_size{that.m_size} { }
+    Ranged_mem_view& operator=(Ranged_mem_view) = delete;
+    Ranged_mem_view(Ranged_mem_view&&) = delete;
+
+    void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override {
+      assert_inside_range(addr);
+      m_memory.write(addr, data, byte_en);
+    }
+    Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override {
+      assert_inside_range(addr);
+      return m_memory.read(addr, byte_en);
+    }
+
+  private:
+    constexpr void assert_inside_range(std::size_t addr) const {
+      if ((addr < m_start_addr) || (addr >= (m_start_addr + m_size))) {
+        throw Errors::Illegal_addr{addr, "addr is out of range. start_addr: " +
+            std::to_string(m_start_addr) + ", size: " + std::to_string(m_size)};
+      }
+    }
+
+    Memory &m_memory;
+    const std::size_t m_start_addr;
+    const std::size_t m_size;
 };
 
 class Rf : public Memory {
