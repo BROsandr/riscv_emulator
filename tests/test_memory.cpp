@@ -211,9 +211,9 @@ TEST_CASE("ranged view", "[RANGED_VIEW]") {
     container[10] = Byte{7};
     container[11] = Byte{8};
     REQUIRE_THROWS_AS(data_mem.read(0, 0xf), Errors::Illegal_addr);
-    REQUIRE_THROWS_AS(data_mem.read(3, 0xf), Errors::Illegal_addr);
-    REQUIRE(data_mem.read(1) == 0x04030201);
-    REQUIRE(data_mem.read(2) == 0x08070605);
+    REQUIRE_THROWS_AS(data_mem.read(12, 0xf), Errors::Illegal_addr);
+    REQUIRE(data_mem.read(4) == 0x04030201);
+    REQUIRE(data_mem.read(8) == 0x08070605);
   }
 
   SECTION("misalignment") {
