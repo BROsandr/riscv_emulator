@@ -31,11 +31,11 @@ class Ranged_mem_view : public Memory {
 
     void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override {
       assert_inside_range(addr);
-      m_memory.write(addr, data, byte_en);
+      m_memory.write(addr - m_start_addr, data, byte_en);
     }
     Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override {
       assert_inside_range(addr);
-      return m_memory.read(addr, byte_en);
+      return m_memory.read(addr - m_start_addr, byte_en);
     }
 
   private:
