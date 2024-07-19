@@ -99,9 +99,11 @@ class Ranged_view {
     Ranged_view(Ranged_view&&) = delete;
 
     auto& operator[](const std::size_t& addr) {
+      assert_inside_range(addr);
       return m_viewed[addr];
     }
     auto& operator[](std::size_t&& addr) {
+      assert_inside_range(addr);
       return m_viewed[std::move(addr)];
     }
 
