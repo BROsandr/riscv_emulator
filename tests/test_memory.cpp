@@ -54,8 +54,15 @@ TEST_CASE("data_mem", "[DATA_MEM]") {
   Data_mem_view data_mem{container};
 
   SECTION("uninitialized_write") {
-    REQUIRE_NOTHROW(data_mem.write(0, 0));
-    REQUIRE(container.size() == 4);
+    SECTION("byte_en=0xf") {
+      REQUIRE_NOTHROW(data_mem.write(0, 0));
+      REQUIRE(container.size() == 4);
+    }
+    SECTION("byte_en=0x1") {
+      REQUIRE_NOTHROW(data_mem.write(0, 0xffffffff, 1));
+      REQUIRE(container[0] == Byte{0xff});
+      REQUIRE(container.size() == 1);
+    }
   }
 
   SECTION("uninitialized_read") {
