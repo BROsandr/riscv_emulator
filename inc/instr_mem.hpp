@@ -17,7 +17,7 @@ class Instr_mem : public Memory {
   public:
     using value_type = Uxlen;
 
-    Instr_mem(Container instr_container) : m_instr_container{std::move(instr_container)} {}
+    Instr_mem(Container content) : m_content{std::move(content)} {}
 
     void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override {
       throw Errors::Read_only{"Write into instr_mem"};
@@ -31,11 +31,11 @@ class Instr_mem : public Memory {
     }
 
   private:
-    const Container m_instr_container;
+    const Container m_content;
 
     constexpr value_type try_get(std::size_t addr) const {
       try {
-        return std::as_const(m_instr_container).at(addr);
+        return std::as_const(m_content).at(addr);
       } catch (const std::out_of_range&) {
         throw Errors::Illegal_addr(addr, "read address is out of instr_mem range.");
       }

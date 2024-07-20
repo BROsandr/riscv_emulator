@@ -10,7 +10,7 @@
 class Data_mem : public Memory {
   public:
     using Map = std::map<std::size_t, std::byte>;
-    Data_mem(Map container) : m_container{std::move(container)} {}
+    Data_mem(Map content) : m_content{std::move(content)} {}
 
     using mapped_type = Map::mapped_type;
 
@@ -23,16 +23,16 @@ class Data_mem : public Memory {
         return mapped_type{static_cast<uint8_t>(data_)};
       };
       if (extract_bits(byte_en, 0)) {
-        m_container.insert_or_assign(addr, to_byte(extract_bits(data, {7,0})));
+        m_content.insert_or_assign(addr, to_byte(extract_bits(data, {7,0})));
       }
       if (extract_bits(byte_en, 1)) {
-        m_container.insert_or_assign(addr+1, to_byte(extract_bits(data, {15,8})));
+        m_content.insert_or_assign(addr+1, to_byte(extract_bits(data, {15,8})));
       }
       if (extract_bits(byte_en, 2)) {
-        m_container.insert_or_assign(addr+2, to_byte(extract_bits(data, {23,16})));
+        m_content.insert_or_assign(addr+2, to_byte(extract_bits(data, {23,16})));
       }
       if (extract_bits(byte_en, 3)) {
-        m_container.insert_or_assign(addr+3, to_byte(extract_bits(data, {31,24})));
+        m_content.insert_or_assign(addr+3, to_byte(extract_bits(data, {31,24})));
       }
     }
 
@@ -62,7 +62,7 @@ class Data_mem : public Memory {
     bool m_assured_aligment{true};
 
   private:
-    Map m_container;
+    Map m_content;
 
     constexpr bool is_misaliged(std::size_t addr, unsigned int byte_en = 0xf) const {
       return !((byte_en > 0) && (byte_en <= 0xf));
@@ -70,7 +70,7 @@ class Data_mem : public Memory {
 
     mapped_type try_get(std::size_t addr) const {
       try {
-        return std::as_const(m_container).at(addr);
+        return std::as_const(m_content).at(addr);
       } catch (const std::out_of_range&) {
         throw Errors::Illegal_addr(addr, "read address is out of data_mem range.");
       }
