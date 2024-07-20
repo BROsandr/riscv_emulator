@@ -7,16 +7,15 @@
 #include <utility>
 #include <map>
 
-template <typename Key, typename V>
 class Data_mem_view : public Memory {
   public:
-    using Map = std::map<Key, V>;
+    using Map = std::map<std::size_t, std::byte>;
     Data_mem_view(Map &container) : m_container{container} {}
     Data_mem_view(const Data_mem_view&) = default;
     Data_mem_view& operator=(Data_mem_view) = delete;
     Data_mem_view(Data_mem_view&&) = delete;
 
-    using value_type = std::byte;
+    using mapped_type = Map::mapped_type;
 
     void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override {
       if(m_assured_aligment && is_misaliged(addr, byte_en)) {
@@ -24,7 +23,7 @@ class Data_mem_view : public Memory {
             std::to_string(byte_en) + ") when reading from data_mem"};
       }
       const auto to_byte = [](Uxlen data_) constexpr {
-        return value_type{static_cast<uint8_t>(data_)};
+        return mapped_type{static_cast<uint8_t>(data_)};
       };
       if (extract_bits(byte_en, 0)) {
         m_container.insert_or_assign(addr, to_byte(extract_bits(data, {7,0})));
@@ -45,7 +44,7 @@ class Data_mem_view : public Memory {
         throw Errors::Misalignment{addr, "illegal byte_en (" +
             std::to_string(byte_en) + ") when writing to data_mem"};
       }
-      const auto to_uxlen = [](value_type b) constexpr {
+      const auto to_uxlen = [](mapped_type b) constexpr {
         return static_cast<Uxlen>(b);
       };
       Uxlen data{0};
@@ -72,7 +71,7 @@ class Data_mem_view : public Memory {
       return !((byte_en > 0) && (byte_en <= 0xf));
     }
 
-    constexpr value_type try_get(std::size_t addr) const {
+    mapped_type try_get(std::size_t addr) const {
       try {
         return std::as_const(m_container).at(addr);
       } catch (const std::out_of_range&) {
