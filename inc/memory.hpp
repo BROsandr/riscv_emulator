@@ -11,12 +11,6 @@ class Memory {
     virtual Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) = 0;
 
     virtual ~Memory() = default;
-
-    Memory(const Memory &) = delete;
-    Memory(const Memory &&) = delete;
-    Memory& operator=(Memory) = delete;
-
-    Memory() = default;
 };
 
 
@@ -24,8 +18,7 @@ class Ranged_mem_span : public Memory {
   public:
     Ranged_mem_span(Memory &memory, std::size_t start_addr, std::size_t size)
         : m_memory{memory}, m_start_addr{start_addr}, m_size{size} {}
-    Ranged_mem_span(const Ranged_mem_span& that)
-        : m_memory{that.m_memory}, m_start_addr{that.m_start_addr}, m_size{that.m_size} { }
+    Ranged_mem_span(const Ranged_mem_span& that) = default;
     Ranged_mem_span& operator=(Ranged_mem_span) = delete;
     Ranged_mem_span(Ranged_mem_span&&) = delete;
 
