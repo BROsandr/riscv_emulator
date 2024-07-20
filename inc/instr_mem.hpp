@@ -30,6 +30,10 @@ class Instr_mem : public Memory {
       return try_get(word_addr);
     }
 
+    const Container& get_content() const {
+      return m_content;
+    }
+
   private:
     const Container m_content;
 

@@ -60,6 +60,9 @@ class Data_mem : public Memory {
       return data;
     }
     bool m_assured_aligment{true};
+    const Map& get_content() const {
+      return m_content;
+    }
 
   private:
     Map m_content;
