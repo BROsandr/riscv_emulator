@@ -7,13 +7,10 @@
 #include <utility>
 #include <map>
 
-class Data_mem_span : public Memory {
+class Data_mem : public Memory {
   public:
     using Map = std::map<std::size_t, std::byte>;
-    Data_mem_span(Map &container) : m_container{container} {}
-    Data_mem_span(const Data_mem_span&) = default;
-    Data_mem_span& operator=(Data_mem_span) = delete;
-    Data_mem_span(Data_mem_span&&) = delete;
+    Data_mem(Map container) : m_container{std::move(container)} {}
 
     using mapped_type = Map::mapped_type;
 
@@ -65,7 +62,7 @@ class Data_mem_span : public Memory {
     bool m_assured_aligment{true};
 
   private:
-    Map &m_container;
+    Map m_container;
 
     constexpr bool is_misaliged(std::size_t addr, unsigned int byte_en = 0xf) const {
       return !((byte_en > 0) && (byte_en <= 0xf));

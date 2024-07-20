@@ -13,14 +13,11 @@
 template <typename Container> requires requires (Container cont) {
   { std::as_const(cont).at(0) } -> std::convertible_to<Uxlen>;
 }
-class Instr_mem_view : public Memory {
+class Instr_mem : public Memory {
   public:
     using value_type = Uxlen;
 
-    Instr_mem_view(const Container &instr_container) : m_instr_container{instr_container} {}
-    Instr_mem_view(const Instr_mem_view&) = default;
-    Instr_mem_view& operator=(Instr_mem_view) = delete;
-    Instr_mem_view(Instr_mem_view&&) = delete;
+    Instr_mem(Container instr_container) : m_instr_container{std::move(instr_container)} {}
 
     void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override {
       throw Errors::Read_only{"Write into instr_mem"};
@@ -34,7 +31,7 @@ class Instr_mem_view : public Memory {
     }
 
   private:
-    const Container &m_instr_container;
+    const Container m_instr_container;
 
     constexpr value_type try_get(std::size_t addr) const {
       try {
