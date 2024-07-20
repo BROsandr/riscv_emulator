@@ -51,7 +51,7 @@ TEST_CASE("data_mem", "[DATA_MEM]") {
   using Cont = std::map<std::size_t, Byte>;
   Cont container{};
 
-  Data_mem_view data_mem{container};
+  Data_mem_span data_mem{container};
 
   SECTION("uninitialized_write") {
     SECTION("byte_en=0xf") {
@@ -203,13 +203,13 @@ TEST_CASE("data_mem", "[DATA_MEM]") {
   }
 }
 
-TEST_CASE("ranged view", "[RANGED_VIEW]") {
+TEST_CASE("ranged_mem", "[RANGED_MEM]") {
   using Cont = std::map<std::size_t, Byte>;
   Cont container{};
 
-  Data_mem_view data_mem{container};
+  Data_mem_span data_mem{container};
 
-  Ranged_mem_view ranged_cont{data_mem, 4, 11 - 4 + 1};
+  Ranged_mem_span ranged_cont{data_mem, 4, 11 - 4 + 1};
 
   SECTION("uninitialized_write") {
     REQUIRE_NOTHROW(ranged_cont.write(4, 0));

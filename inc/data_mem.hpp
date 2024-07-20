@@ -7,13 +7,13 @@
 #include <utility>
 #include <map>
 
-class Data_mem_view : public Memory {
+class Data_mem_span : public Memory {
   public:
     using Map = std::map<std::size_t, std::byte>;
-    Data_mem_view(Map &container) : m_container{container} {}
-    Data_mem_view(const Data_mem_view&) = default;
-    Data_mem_view& operator=(Data_mem_view) = delete;
-    Data_mem_view(Data_mem_view&&) = delete;
+    Data_mem_span(Map &container) : m_container{container} {}
+    Data_mem_span(const Data_mem_span&) = default;
+    Data_mem_span& operator=(Data_mem_span) = delete;
+    Data_mem_span(Data_mem_span&&) = delete;
 
     using mapped_type = Map::mapped_type;
 

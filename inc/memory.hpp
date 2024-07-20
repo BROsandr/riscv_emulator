@@ -20,14 +20,14 @@ class Memory {
 };
 
 
-class Ranged_mem_view : public Memory {
+class Ranged_mem_span : public Memory {
   public:
-    Ranged_mem_view(Memory &memory, std::size_t start_addr, std::size_t size)
+    Ranged_mem_span(Memory &memory, std::size_t start_addr, std::size_t size)
         : m_memory{memory}, m_start_addr{start_addr}, m_size{size} {}
-    Ranged_mem_view(const Ranged_mem_view& that)
+    Ranged_mem_span(const Ranged_mem_span& that)
         : m_memory{that.m_memory}, m_start_addr{that.m_start_addr}, m_size{that.m_size} { }
-    Ranged_mem_view& operator=(Ranged_mem_view) = delete;
-    Ranged_mem_view(Ranged_mem_view&&) = delete;
+    Ranged_mem_span& operator=(Ranged_mem_span) = delete;
+    Ranged_mem_span(Ranged_mem_span&&) = delete;
 
     void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override {
       assert_inside_range(addr);
