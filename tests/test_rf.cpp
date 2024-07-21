@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN
 
-#include "memory.hpp"
+#include "rf.hpp"
 
 #include "catch2/catch_test_macros.hpp"
 
