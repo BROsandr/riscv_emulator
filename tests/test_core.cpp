@@ -19,6 +19,7 @@ TEST_CASE("basic", "[BASIC]") {
 
   auto sink = std::make_shared<spdlog::sinks::stdout_color_sink_st>();
   auto my_logger = std::make_shared<spdlog::logger>("console", sink);
+  my_logger->set_level(spdlog::level::debug);
   Isa_ext_container extensions{Isa_extension::isa_zicsr};
 
   SECTION("single_instr1") {
