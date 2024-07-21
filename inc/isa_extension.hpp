@@ -24,10 +24,10 @@ class Isa_ext_container {
         : Isa_ext_container({extension}) {}
     Isa_ext_container() = default;
 
-    bool operator[](Isa_extension extension) const {
+    [[nodiscard]] bool operator[](Isa_extension extension) const {
       return m_extensions[static_cast<std::size_t>(extension)];
     }
-    Base_bitset::reference operator[](Isa_extension extension) {
+    [[nodiscard]] Base_bitset::reference operator[](Isa_extension extension) {
       return m_extensions[static_cast<std::size_t>(extension)];
     }
 

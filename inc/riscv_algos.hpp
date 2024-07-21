@@ -15,11 +15,11 @@ class Bit_range {
     explicit constexpr Bit_range(std::size_t pos)
         : Bit_range(pos, pos) {}
 
-    constexpr std::size_t get_msb()   const {return m_msb;}
-    constexpr std::size_t get_lsb()   const {return m_lsb;}
-    constexpr std::size_t get_width() const {return m_width;}
+    [[nodiscard]] constexpr std::size_t get_msb()   const {return m_msb;}
+    [[nodiscard]] constexpr std::size_t get_lsb()   const {return m_lsb;}
+    [[nodiscard]] constexpr std::size_t get_width() const {return m_width;}
 
-    constexpr bool is_overlapping(const Bit_range& rhs) const {
+    [[nodiscard]] constexpr bool is_overlapping(const Bit_range& rhs) const {
       return get_lsb() <= rhs.get_msb() && rhs.get_lsb() <= get_msb();
     }
 
@@ -34,12 +34,13 @@ class Bit_range {
     const std::size_t m_width;
 };
 
-constexpr bool is_overlapping(const Bit_range& lhs, const Bit_range& rhs) {
+[[nodiscard("PURE FUN")]] constexpr bool is_overlapping(const Bit_range& lhs,
+    const Bit_range& rhs) {
   return lhs.get_lsb() <= rhs.get_msb() && rhs.get_lsb() <= lhs.get_msb();
 }
 
 template <typename T>
-constexpr T make_mask(std::size_t len, std::size_t start_pos = 0) {
+[[nodiscard("PURE FUN")]] constexpr T make_mask(std::size_t len, std::size_t start_pos = 0) {
   return ((static_cast<T>(1) << len)-1) << start_pos;
 }
 
@@ -54,7 +55,7 @@ concept Andable = requires(T a) {
 };
 
 template <typename T>
-constexpr T sign_extend(T data, std::size_t sign_pos) {
+[[nodiscard("PURE FUN")]] constexpr T sign_extend(T data, std::size_t sign_pos) {
   assert(sign_pos < (sizeof(data) * 8));
 
   T m{T{1} << (sign_pos-1)};
@@ -62,7 +63,7 @@ constexpr T sign_extend(T data, std::size_t sign_pos) {
 }
 
 template <typename T> requires Right_shiftable<T> && Andable<T>
-constexpr T extract_bits(T data, Bit_range range, bool sext = false) {
+[[nodiscard("PURE FUN")]] constexpr T extract_bits(T data, Bit_range range, bool sext = false) {
   assert(range.get_msb() < (sizeof(T) * CHAR_BIT));
   T unextended{(data >> range.get_lsb()) & static_cast<T>(make_mask<unsigned long long>(range.get_width()))};
   if (sext) return sign_extend(unextended, range.get_width() - 1);
@@ -70,7 +71,7 @@ constexpr T extract_bits(T data, Bit_range range, bool sext = false) {
 }
 
 template <typename T> requires Right_shiftable<T> && Andable<T>
-constexpr T extract_bits(T data, std::size_t pos, bool sext = false) {
+[[nodiscard("PURE FUN")]] constexpr T extract_bits(T data, std::size_t pos, bool sext = false) {
   return extract_bits(data, {pos, pos}, sext);
 }
 
@@ -88,7 +89,7 @@ concept Orable = requires(T a) {
 };
 
 template <typename T> requires Shiftable<T> && Orable<T>
-constexpr T extract_bits(T data, std::initializer_list<Bit_range> bit_ranges, bool sext = false) {
+[[nodiscard("PURE FUN")]] constexpr T extract_bits(T data, std::initializer_list<Bit_range> bit_ranges, bool sext = false) {
   T result{extract_bits(data, *(bit_ranges.begin()), sext)};
   for (const auto *it{bit_ranges.begin() + 1}; it != bit_ranges.end(); ++it) {
     result = (result << (*it).get_width()) | extract_bits(data, *it);

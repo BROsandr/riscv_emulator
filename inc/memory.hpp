@@ -8,7 +8,7 @@
 class Memory {
   public:
     virtual void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) = 0;
-    virtual Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) = 0;
+    [[nodiscard]] virtual Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) = 0;
 
     virtual ~Memory() = default;
 };
@@ -26,7 +26,7 @@ class Ranged_mem_span : public Memory {
       assert_inside_range(addr);
       m_memory.write(addr - m_start_addr, data, byte_en);
     }
-    Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override {
+    [[nodiscard]] Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override {
       assert_inside_range(addr);
       return m_memory.read(addr - m_start_addr, byte_en);
     }
@@ -42,7 +42,7 @@ class Ranged_mem_span : public Memory {
     Memory &m_memory;
     const std::size_t m_start_addr;
     const std::size_t m_size;
-    std::size_t get_end_addr() const {
+    [[nodiscard]] std::size_t get_end_addr() const {
       return m_start_addr + m_size - 1;
     }
 };
@@ -54,7 +54,7 @@ class Rf : public Memory {
     void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override {
       m_registers[addr] = data;
     }
-    Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override {
+    [[nodiscard]] Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override {
       return m_registers[addr];
     }
 

@@ -7,7 +7,7 @@
 #include <limits>
 
 namespace {
-  std::pair<Uxlen, bool> calculate(Alu::Op op, Uxlen a, Uxlen b) {
+  [[nodiscard("PURE FUN")]] std::pair<Uxlen, bool> calculate(Alu::Op op, Uxlen a, Uxlen b) {
     return {calc_result(op, a, b), calc_flag(op, a, b)};
   }
 }

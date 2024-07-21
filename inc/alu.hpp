@@ -22,6 +22,6 @@ namespace Alu {
     SLTU = 0b00011,
   };
 
-  Uxlen calc_result(Op op, Uxlen a, Uxlen b);
-  bool  calc_flag  (Op op, Uxlen a, Uxlen b);
+  [[nodiscard("PURE FUN")]] Uxlen calc_result(Op op, Uxlen a, Uxlen b);
+  [[nodiscard("PURE FUN")]] bool  calc_flag  (Op op, Uxlen a, Uxlen b);
 };

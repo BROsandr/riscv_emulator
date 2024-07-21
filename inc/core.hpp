@@ -38,7 +38,7 @@ class Core {
     Memory &m_rf;
     std::shared_ptr<spdlog::logger> m_logger{nullptr};
     Uxlen m_pc{0};
-    Uxlen fetch_instruction() const {
+    [[nodiscard]] Uxlen fetch_instruction() const {
       return m_data_mem.read(m_pc);
     }
 

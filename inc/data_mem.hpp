@@ -36,7 +36,7 @@ class Data_mem : public Memory {
       }
     }
 
-    Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override {
+    [[nodiscard]] Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override {
       if(m_assured_aligment && is_misaliged(addr, byte_en)) {
         throw Errors::Misalignment{addr, "illegal byte_en (" +
             std::to_string(byte_en) + ") when writing to data_mem"};
@@ -60,14 +60,15 @@ class Data_mem : public Memory {
       return data;
     }
     bool m_assured_aligment{true};
-    const Map& get_content() const {
+    [[nodiscard]] const Map& get_content() const {
       return m_content;
     }
 
   private:
     Map m_content;
 
-    bool is_misaliged(std::size_t addr, unsigned int byte_en = 0xf) const {
+    [[nodiscard("PURE FUN")]] bool is_misaliged(std::size_t addr,
+        unsigned int byte_en = 0xf) const {
       return !((byte_en > 0) && (byte_en <= 0xf));
     }
 

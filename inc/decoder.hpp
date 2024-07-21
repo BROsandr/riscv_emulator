@@ -76,7 +76,7 @@ class Decoder {
       unsigned int         rd         {};
       Concrete_instruction instruction{};
 
-      Instruction_type get_type() const;
+      [[nodiscard]] Instruction_type get_type() const;
     };
 
     explicit Decoder(Isa_ext_container extensions)
@@ -105,7 +105,7 @@ class Decoder {
 
 };
 
-inline Decoder::Instruction_type Decoder::Instruction_info::get_type() const {
+[[nodiscard]] inline Decoder::Instruction_type Decoder::Instruction_info::get_type() const {
   using enum Decoder::Concrete_instruction;
   using enum Decoder::Instruction_type;
   switch (instruction) {

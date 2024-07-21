@@ -23,14 +23,14 @@ class Instr_mem : public Memory {
       throw Errors::Read_only{"Write into instr_mem"};
     }
 
-    Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override {
+    [[nodiscard]] Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override {
       assert((byte_en == 0xf) && "only word access is supported");
       assert(!(addr & 0b11) && "only alignment by word is supported");
       const std::size_t word_addr{addr >> 2};
       return try_get(word_addr);
     }
 
-    const Container& get_content() const {
+    [[nodiscard]] const Container& get_content() const {
       return m_content;
     }
 

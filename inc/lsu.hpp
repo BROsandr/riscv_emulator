@@ -15,7 +15,7 @@ namespace Lsu {
     w
   };
 
-  inline bool is_misaligned(Op op, std::size_t addr) {
+  [[nodiscard("PURE FUN")]] inline bool is_misaligned(Op op, std::size_t addr) {
     switch (op) {
       case Op::bu: case Op::b: return false;
       case Op::hu: case Op::h: return addr & 0b01;
@@ -24,7 +24,7 @@ namespace Lsu {
     assert(0 && "Illegal lsu op");
   }
 
-  inline Uxlen transform_data(Op op, std::size_t addr, Uxlen data) {
+  [[nodiscard("PURE FUN")]] inline Uxlen transform_data(Op op, std::size_t addr, Uxlen data) {
     switch (op) {
       case Op::b:
         switch (addr & 0b11) {
@@ -60,7 +60,7 @@ namespace Lsu {
     assert(0 && "Invalid op");
   }
 
-  inline unsigned int get_be(Op op, std::size_t addr) {
+  [[nodiscard("PURE FUN")]] inline unsigned int get_be(Op op, std::size_t addr) {
     const auto byte_offset{addr & 0b11};
     switch (op) {
       case Op::b: case Op::bu: return 1u      << byte_offset;
@@ -71,7 +71,7 @@ namespace Lsu {
   }
 }
 
-inline std::string to_string(Lsu::Op op) {
+[[nodiscard("PURE FUN")]] inline std::string to_string(Lsu::Op op) {
   using enum Lsu::Op;
   switch (op) {
     case b : return "b";

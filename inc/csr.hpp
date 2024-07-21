@@ -15,7 +15,7 @@ class Csr : public Memory {
     };
 
     void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override;
-    Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override;
+    [[nodiscard]] Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override;
 
   private:
     std::map<Register, Uxlen> m_registers;

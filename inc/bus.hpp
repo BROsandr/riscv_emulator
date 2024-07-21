@@ -23,7 +23,7 @@ class Bus : public Memory {
       Nodes::value_type node{try_get_node(addr)};
       node.second.write(addr - node.first, data, byte_en);
     }
-    Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override {
+    [[nodiscard]] Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override {
       Nodes::value_type node{try_get_node(addr)};
       return node.second.read(addr - node.first, byte_en);
     }

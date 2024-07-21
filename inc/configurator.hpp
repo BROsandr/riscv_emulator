@@ -5,7 +5,7 @@
 
 class Configurator {
   public:
-    static Configurator &get_instance() {
+    [[nodiscard]] static Configurator &get_instance() {
       static Configurator instance{};
       return instance;
     }
@@ -16,7 +16,7 @@ class Configurator {
     Configurator& operator=(const Configurator& ) = delete;
     Configurator& operator=(      Configurator&&) = delete;
 
-    Decoder create_decoder() const {
+    [[nodiscard]] Decoder create_decoder() const {
       return Decoder{config_db.get_isa_extensions()};
     }
   private:

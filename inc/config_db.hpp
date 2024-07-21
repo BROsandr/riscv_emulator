@@ -4,7 +4,7 @@
 
 class Config_db {
   public:
-    static Config_db &get_instance() {
+    [[nodiscard]] static Config_db &get_instance() {
       static Config_db instance{};
       return instance;
     }
@@ -14,11 +14,11 @@ class Config_db {
       return get_instance();
     }
 
-    const Isa_ext_container &get_isa_extensions() const {
+    [[nodiscard]] const Isa_ext_container &get_isa_extensions() const {
       return get_instance().m_isa_extensions;
     }
 
-    Isa_ext_container get_isa_extensions() {
+    [[nodiscard]] Isa_ext_container get_isa_extensions() {
       return get_instance().m_isa_extensions;
     }
 
