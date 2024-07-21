@@ -14,9 +14,15 @@ class Csr : public Memory {
       MCAUSE   = 0x342,
     };
 
+    using Container = std::map<Register, Uxlen>;
+
     void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override;
     [[nodiscard]] Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override;
 
+    [[nodiscard]] const Container& get_content() const {
+      return m_registers;
+    }
+
   private:
-    std::map<Register, Uxlen> m_registers;
+    Container m_registers{};
 };
