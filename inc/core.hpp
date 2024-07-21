@@ -14,7 +14,7 @@ namespace spdlog {
 
 class Core {
   public:
-    Core(Memory &instr_mem, Memory &data_mem, Memory &csr, Memory &rf,
+    Core(const Memory &instr_mem, Memory &data_mem, Memory &csr, Memory &rf,
         std::shared_ptr<spdlog::logger> logger)
         : m_instr_mem{instr_mem}, m_data_mem{data_mem}, m_csr{csr}, m_rf{rf}, m_logger{logger} {
       assert(m_logger && "logger == nullptr in core");
@@ -32,7 +32,7 @@ class Core {
     Core& operator=(      Core&&) = delete;
 
     bool m_irq_req{false};
-    Memory &m_instr_mem;
+    const Memory &m_instr_mem;
     Memory &m_data_mem;
     Memory &m_csr;
     Memory &m_rf;
