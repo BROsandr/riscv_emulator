@@ -6,6 +6,8 @@
 
 class Rf : public Memory {
   public:
+    using Container = std::vector<Uxlen>;
+
     Rf(unsigned int registers_number = 32) : m_registers(registers_number, 0) {}
 
     void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override {
@@ -15,6 +17,10 @@ class Rf : public Memory {
       return m_registers[addr];
     }
 
+    [[nodiscard]] const Container& get_content() const {
+      return m_registers;
+    }
+
   private:
-    std::vector<Uxlen> m_registers;
+    Container m_registers;
 };
