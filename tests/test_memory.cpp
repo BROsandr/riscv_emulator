@@ -1,6 +1,7 @@
 #include "exception.hpp"
 #include "instr_mem.hpp"
 #include "data_mem.hpp"
+#include "memory.hpp"
 #include "riscv_algos.hpp"
 
 #include <climits>
@@ -196,11 +197,13 @@ TEST_CASE("data_mem", "[DATA_MEM]") {
 
 TEST_CASE("ranged_mem", "[RANGED_MEM]") {
   using Cont = std::map<std::size_t, Byte>;
-
+  const auto get_ranged_cont = [](Memory &mem)->Ranged_mem_span {
+    return Ranged_mem_span{mem, 11 - 4 + 1, 4};
+  };
 
   SECTION("uninitialized_write") {
     Data_mem data_mem{{}};
-    Ranged_mem_span ranged_cont{data_mem, 4, 11 - 4 + 1};
+    Ranged_mem_span ranged_cont{get_ranged_cont(data_mem)};
     REQUIRE_NOTHROW(ranged_cont.write(4, 0));
     REQUIRE_THROWS_AS(ranged_cont.read(8), Errors::Illegal_addr);
     REQUIRE(data_mem.get_content().size() == 4);
@@ -208,7 +211,7 @@ TEST_CASE("ranged_mem", "[RANGED_MEM]") {
 
   SECTION("uninitialized_read") {
     Data_mem data_mem{{}};
-    Ranged_mem_span ranged_cont{data_mem, 4, 11 - 4 + 1};
+    Ranged_mem_span ranged_cont{get_ranged_cont(data_mem)};
     REQUIRE_THROWS_AS(ranged_cont.read(4, 0x1), Errors::Illegal_addr);
     REQUIRE(data_mem.get_content().empty());
   }
@@ -224,7 +227,7 @@ TEST_CASE("ranged_mem", "[RANGED_MEM]") {
     container[6] = Byte{7};
     container[7] = Byte{8};
     Data_mem data_mem{container};
-    Ranged_mem_span ranged_cont{data_mem, 4, 11 - 4 + 1};
+    Ranged_mem_span ranged_cont{get_ranged_cont(data_mem)};
     REQUIRE_THROWS_AS(ranged_cont.read(0, 0xf), Errors::Illegal_addr);
     REQUIRE_THROWS_AS(ranged_cont.read(12, 0xf), Errors::Illegal_addr);
     REQUIRE(ranged_cont.read(4) == 0x04030201);
@@ -240,7 +243,7 @@ TEST_CASE("ranged_mem", "[RANGED_MEM]") {
     container[3] = Byte{4};
 
     Data_mem data_mem{container};
-    Ranged_mem_span ranged_cont{data_mem, 4, 11 - 4 + 1};
+    Ranged_mem_span ranged_cont{get_ranged_cont(data_mem)};
     REQUIRE_THROWS_AS(ranged_cont.read(8, 0xf), Errors::Illegal_addr);
     ranged_cont.write(8, 0x08070605, 0xf);
     REQUIRE(ranged_cont.read(8, 0xf) == 0x08070605);
@@ -262,7 +265,7 @@ TEST_CASE("ranged_mem", "[RANGED_MEM]") {
     container[2] = {};
     container[3] = {};
     Data_mem data_mem{container};
-    Ranged_mem_span ranged_cont{data_mem, 4, 11 - 4 + 1};
+    Ranged_mem_span ranged_cont{get_ranged_cont(data_mem)};
     data_mem.m_assured_aligment = true;
     REQUIRE_THROWS_AS(ranged_cont.read(4, 0b10000), Errors::Misalignment);
     REQUIRE(data_mem.get_content().size() == 4);

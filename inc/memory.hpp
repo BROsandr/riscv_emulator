@@ -16,7 +16,7 @@ class Memory {
 
 class Ranged_mem_span : public Memory {
   public:
-    Ranged_mem_span(Memory &memory, std::size_t start_addr, std::size_t size)
+    Ranged_mem_span(Memory &memory, std::size_t size, std::size_t start_addr = 0)
         : m_memory{memory}, m_start_addr{start_addr}, m_size{size} {}
     Ranged_mem_span(const Ranged_mem_span& that) = default;
     Ranged_mem_span& operator=(Ranged_mem_span) = delete;
