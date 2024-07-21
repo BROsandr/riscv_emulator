@@ -5,6 +5,7 @@
 #include "instr_mem.hpp"
 #include "data_mem.hpp"
 #include "csr.hpp"
+#include "isa_extension.hpp"
 #include "rf.hpp"
 
 #include "spdlog/logger.h"
@@ -18,6 +19,7 @@ TEST_CASE("basic", "[BASIC]") {
 
   auto sink = std::make_shared<spdlog::sinks::stdout_color_sink_st>();
   auto my_logger = std::make_shared<spdlog::logger>("console", sink);
+  Isa_ext_container extensions{Isa_extension::isa_zicsr};
 
   SECTION("single_instr1") {
     const std::vector<Uxlen> instr{0x00100093}; // addi x1 x0 1
@@ -27,7 +29,7 @@ TEST_CASE("basic", "[BASIC]") {
     Rf rf{};
     Csr csr{};
 
-    Core core{instr_mem, data_mem, csr, rf, my_logger};
+    Core core{instr_mem, data_mem, csr, rf, my_logger, extensions};
 
     try {
       core.cycle();

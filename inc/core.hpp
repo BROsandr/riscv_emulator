@@ -1,5 +1,6 @@
 #pragma once
 
+#include "isa_extension.hpp"
 #include "riscv.hpp"
 #include "memory.hpp"
 
@@ -15,8 +16,9 @@ namespace spdlog {
 class Core {
   public:
     Core(const Memory &instr_mem, Memory &data_mem, Memory &csr, Memory &rf,
-        std::shared_ptr<spdlog::logger> logger)
-        : m_instr_mem{instr_mem}, m_data_mem{data_mem}, m_csr{csr}, m_rf{rf}, m_logger{logger} {
+        std::shared_ptr<spdlog::logger> logger, Isa_ext_container isa_ext_container = {})
+        : m_instr_mem{instr_mem}, m_data_mem{data_mem}, m_csr{csr}, m_rf{rf}, m_logger{logger},
+        m_isa_ext_container{isa_ext_container} {
       assert(m_logger && "logger == nullptr in core");
     }
     ~Core() = default;
@@ -41,6 +43,7 @@ class Core {
     [[nodiscard]] Uxlen fetch_instruction() const {
       return m_data_mem.read(m_pc);
     }
+    const Isa_ext_container m_isa_ext_container;
 
     void increment_pc();
 };

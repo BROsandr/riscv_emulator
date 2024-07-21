@@ -3,7 +3,6 @@
 #include "alu.hpp"
 #include "csr.hpp"
 #include "decoder.hpp"
-#include "configurator.hpp"
 #include "lsu.hpp"
 #include "riscv.hpp"
 
@@ -280,7 +279,7 @@ namespace {
 
 void Core::cycle() {
   const Uxlen instruction{fetch_instruction()};
-  const Decoder decoder{Configurator::get_instance().create_decoder()};
+  const Decoder decoder{m_isa_ext_container};
   const Decoder::Instruction_info instr_info{decoder.decode(instruction)};
   Memory &rf{m_rf};
   Memory &csr{m_csr};
