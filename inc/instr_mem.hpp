@@ -37,7 +37,7 @@ class Instr_mem : public Memory {
   private:
     const Container m_content;
 
-    constexpr value_type try_get(std::size_t addr) const {
+    value_type try_get(std::size_t addr) const {
       try {
         return std::as_const(m_content).at(addr);
       } catch (const std::out_of_range&) {

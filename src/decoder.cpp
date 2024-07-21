@@ -51,7 +51,7 @@ namespace {
     return extract_bits(instruction, {Bit_range{12}, {10, 5}, {4, 1}, Bit_range{11}}, true);
   }
 
-  constexpr std::string to_string(Isa_extension extension) {
+  std::string to_string(Isa_extension extension) {
     using enum Isa_extension;
     switch (extension) {
       case isa_zicsr: return "Zicsr";
@@ -61,43 +61,43 @@ namespace {
     }
   }
 
-  constexpr void decode_i   (Decoder::Instruction_info &info, Uxlen instr) {
+  void decode_i   (Decoder::Instruction_info &info, Uxlen instr) {
     info.rd  = get_rd(instr);
     info.rs1 = get_rs1(instr);
     info.imm = get_imm12(instr);
   }
-  constexpr void decode_i_sh5(Decoder::Instruction_info &info, Uxlen instr) {
+  void decode_i_sh5(Decoder::Instruction_info &info, Uxlen instr) {
     info.rd  = get_rd(instr);
     info.rs1 = get_rs1(instr);
     info.imm = get_shamt5(instr);
   }
-  constexpr void decode_r    (Decoder::Instruction_info &info, Uxlen instr) {
+  void decode_r    (Decoder::Instruction_info &info, Uxlen instr) {
     info.rd  = get_rd(instr);
     info.rs1 = get_rs1(instr);
     info.rs2 = get_rs2(instr);
   }
-  constexpr void decode_s    (Decoder::Instruction_info &info, Uxlen instr) {
+  void decode_s    (Decoder::Instruction_info &info, Uxlen instr) {
     info.rs1 = get_rs1(instr);
     info.rs2 = get_rs2(instr);
     info.imm = get_simm12(instr);
   }
-  constexpr void decode_u    (Decoder::Instruction_info &info, Uxlen instr) {
+  void decode_u    (Decoder::Instruction_info &info, Uxlen instr) {
     info.rd  = get_rd(instr);
     info.rs1 = get_rs1(instr);
     info.imm = get_imm20(instr);
   }
-  constexpr void decode_uj   (Decoder::Instruction_info &info, Uxlen instr) {
+  void decode_uj   (Decoder::Instruction_info &info, Uxlen instr) {
     info.rd  = get_rd(instr);
     info.rs1 = get_rs1(instr);
     info.imm = get_jimm20(instr);
   }
-  constexpr void decode_sb   (Decoder::Instruction_info &info, Uxlen instr) {
+  void decode_sb   (Decoder::Instruction_info &info, Uxlen instr) {
     info.rs1 = get_rs1(instr);
     info.rs2 = get_rs2(instr);
     info.imm = get_sbimm12(instr);
   }
 
-  constexpr void decode_instruction_type(Decoder::Instruction_info &info, Uxlen instruction) {
+  void decode_instruction_type(Decoder::Instruction_info &info, Uxlen instruction) {
     using enum Decoder::Instruction_type;
     switch (info.get_type()) {
       case none :                     break;

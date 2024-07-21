@@ -32,7 +32,7 @@ class Ranged_mem_span : public Memory {
     }
 
   private:
-    constexpr void assert_inside_range(std::size_t addr) const {
+    void assert_inside_range(std::size_t addr) const {
       if ((addr < m_start_addr) || (addr >= (m_start_addr + m_size))) {
         throw Errors::Illegal_addr{addr, "addr is out of range. start_addr: " +
             std::to_string(m_start_addr) + ", size: " + std::to_string(m_size)};
@@ -42,7 +42,7 @@ class Ranged_mem_span : public Memory {
     Memory &m_memory;
     const std::size_t m_start_addr;
     const std::size_t m_size;
-    constexpr std::size_t get_end_addr() const {
+    std::size_t get_end_addr() const {
       return m_start_addr + m_size - 1;
     }
 };

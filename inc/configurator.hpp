@@ -16,7 +16,7 @@ class Configurator {
     Configurator& operator=(const Configurator& ) = delete;
     Configurator& operator=(      Configurator&&) = delete;
 
-    constexpr Decoder create_decoder() const {
+    Decoder create_decoder() const {
       return Decoder{config_db.get_isa_extensions()};
     }
   private:

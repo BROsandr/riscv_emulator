@@ -76,12 +76,12 @@ class Decoder {
       unsigned int         rd         {};
       Concrete_instruction instruction{};
 
-      constexpr Instruction_type get_type() const;
+      Instruction_type get_type() const;
     };
 
-    explicit constexpr Decoder(Isa_ext_container extensions)
+    explicit Decoder(Isa_ext_container extensions)
         : m_isa_ext_container{extensions} {};
-    constexpr Decoder() = default;
+    Decoder() = default;
     Instruction_info decode(Uxlen instruction) const;
 
   private:
@@ -105,7 +105,7 @@ class Decoder {
 
 };
 
-constexpr Decoder::Instruction_type Decoder::Instruction_info::get_type() const {
+inline Decoder::Instruction_type Decoder::Instruction_info::get_type() const {
   using enum Decoder::Concrete_instruction;
   using enum Decoder::Instruction_type;
   switch (instruction) {

@@ -6,11 +6,11 @@
 namespace {
   using enum Alu::Op;
 
-  constexpr std::pair<Uxlen, bool> calculate(Alu::Op op, Uxlen a, Uxlen b) {
+  std::pair<Uxlen, bool> calculate(Alu::Op op, Uxlen a, Uxlen b) {
       const Sxlen a_signed{static_cast<Sxlen>(a)};
       const Sxlen b_signed{static_cast<Sxlen>(b)};
 
-      const auto get_shamt = [b]() constexpr {
+      const auto get_shamt = [b]() {
         constexpr Uxlen shamt_mask{(sizeof(Uxlen) * 8) - 1};
         assert((b & shamt_mask) == b);
         return b;

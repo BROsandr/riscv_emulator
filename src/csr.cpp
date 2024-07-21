@@ -5,7 +5,7 @@
 namespace {
 
   template<typename Int_t>
-  constexpr bool is_legal_reg(Int_t reg) {
+  bool is_legal_reg(Int_t reg) {
     using enum Csr::Register;
     switch (reg) {
       case Int_t(MEPC):
@@ -19,7 +19,7 @@ namespace {
   }
 
   template<typename Int_t>
-  constexpr void assert_legal_reg(Int_t reg) {
+  void assert_legal_reg(Int_t reg) {
     if (!is_legal_reg(reg)) throw Errors::Illegal_addr{reg, "Illegal csr register."};
   }
 }

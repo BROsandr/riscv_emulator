@@ -12,7 +12,7 @@
 #include <cassert>
 
 namespace {
-  constexpr Alu::Op to_alu_op(Decoder::Concrete_instruction instr) {
+  Alu::Op to_alu_op(Decoder::Concrete_instruction instr) {
     using enum Decoder::Concrete_instruction;
     switch (instr) {
       case instr_add :
@@ -64,7 +64,7 @@ namespace {
     CSR_RCI = 0b111
   };
 
-  constexpr Csr_op to_csr_op(Decoder::Concrete_instruction instr) {
+  Csr_op to_csr_op(Decoder::Concrete_instruction instr) {
     using enum Decoder::Concrete_instruction;
     using enum Csr_op;
     switch (instr) {
@@ -78,7 +78,7 @@ namespace {
     }
   }
 
-  constexpr Lsu::Op to_lsu_op(Decoder::Concrete_instruction instr) {
+  Lsu::Op to_lsu_op(Decoder::Concrete_instruction instr) {
     using enum Decoder::Concrete_instruction;
     using enum Lsu::Op;
     switch (instr) {
@@ -114,7 +114,7 @@ namespace {
     type_fence,
   };
 
-  constexpr Handler_type to_handler_type(Decoder::Concrete_instruction instr) {
+  Handler_type to_handler_type(Decoder::Concrete_instruction instr) {
     using enum Decoder::Concrete_instruction;
     using enum Handler_type;
     switch (instr) {
@@ -177,20 +177,20 @@ namespace {
     assert(0 && "Invalid instr2handler_type conversion");
   }
 
-  constexpr void handle_type_calc_imm(const Decoder::Instruction_info &instr_info, Memory &rf) {
+  void handle_type_calc_imm(const Decoder::Instruction_info &instr_info, Memory &rf) {
     const Uxlen a{rf.read(instr_info.rs1)};
     const Uxlen alu_res{Alu::calc_result(to_alu_op(instr_info.instruction), a, instr_info.imm)};
     rf.write(instr_info.rd, alu_res);
   }
 
-  constexpr void handle_type_calc_reg(const Decoder::Instruction_info &instr_info, Memory &rf) {
+  void handle_type_calc_reg(const Decoder::Instruction_info &instr_info, Memory &rf) {
     const Uxlen a{rf.read(instr_info.rs1)};
     const Uxlen b{rf.read(instr_info.rs2)};
     const Uxlen alu_res{Alu::calc_result(to_alu_op(instr_info.instruction), a, b)};
     rf.write(instr_info.rd, alu_res);
   }
 
-  constexpr void handle_type_store(const Decoder::Instruction_info &instr_info, Memory &rf,
+  void handle_type_store(const Decoder::Instruction_info &instr_info, Memory &rf,
       Memory &data_mem, spdlog::logger &logger, auto pc) {
     const std::size_t addr{rf.read(instr_info.rs1) + instr_info.imm};
     const Uxlen data{rf.read(instr_info.rs2)};
@@ -202,7 +202,7 @@ namespace {
     data_mem.write(addr, data, Lsu::get_be(lsu_op, addr));
   }
 
-  constexpr void handle_type_load(const Decoder::Instruction_info &instr_info, Memory &rf,
+  void handle_type_load(const Decoder::Instruction_info &instr_info, Memory &rf,
       Memory &data_mem, spdlog::logger &logger, auto pc) {
     const std::size_t addr{rf.read(instr_info.rs1) + instr_info.imm};
     const auto lsu_op = to_lsu_op(instr_info.instruction);
@@ -215,32 +215,32 @@ namespace {
     rf.write(instr_info.rd, data);
   }
 
-  constexpr void handle_type_branch(const Decoder::Instruction_info &instr_info, Memory &rf, auto &pc) {
+  void handle_type_branch(const Decoder::Instruction_info &instr_info, Memory &rf, auto &pc) {
     const Uxlen a{rf.read(instr_info.rs1)};
     const Uxlen b{rf.read(instr_info.rs2)};
     const Uxlen alu_flag{Alu::calc_flag(to_alu_op(instr_info.instruction), a, b)};
     if (alu_flag) pc += instr_info.imm;
   }
 
-  constexpr void handle_type_auipc(const Decoder::Instruction_info &instr_info, Memory &rf, const auto &pc) {
+  void handle_type_auipc(const Decoder::Instruction_info &instr_info, Memory &rf, const auto &pc) {
     rf.write(instr_info.rd, pc + (instr_info.imm << 12));
   }
 
-  constexpr void handle_type_lui(const Decoder::Instruction_info &instr_info, Memory &rf) {
+  void handle_type_lui(const Decoder::Instruction_info &instr_info, Memory &rf) {
     rf.write(instr_info.rd, instr_info.imm << 12);
   }
 
-  constexpr void handle_type_jal(const Decoder::Instruction_info &instr_info, Memory &rf, auto &pc) {
+  void handle_type_jal(const Decoder::Instruction_info &instr_info, Memory &rf, auto &pc) {
     rf.write(instr_info.rd, pc + 4);
     pc += instr_info.imm;
   }
 
-  constexpr void handle_type_jalr(const Decoder::Instruction_info &instr_info, Memory &rf, auto &pc) {
+  void handle_type_jalr(const Decoder::Instruction_info &instr_info, Memory &rf, auto &pc) {
     rf.write(instr_info.rd, pc + 4);
     pc = (rf.read(instr_info.rs1) + instr_info.imm) & make_mask<Uxlen>(32, 1);
   }
 
-  constexpr Uxlen exec_csr_op(Memory &csr, Csr_op op, std::size_t addr, Uxlen data) {
+  Uxlen exec_csr_op(Memory &csr, Csr_op op, std::size_t addr, Uxlen data) {
     using enum Csr_op;
     Uxlen res{csr.read(addr)};
     switch (op) {
@@ -258,13 +258,13 @@ namespace {
     return res;
   }
 
-  constexpr void handle_type_csr_imm(const Decoder::Instruction_info &instr_info, Memory &rf, Memory &csr) {
+  void handle_type_csr_imm(const Decoder::Instruction_info &instr_info, Memory &rf, Memory &csr) {
     const Csr_op op{to_csr_op(instr_info.instruction)};
     const Uxlen rd_data{exec_csr_op(csr, op, instr_info.imm, instr_info.rs1)};
     rf.write(instr_info.rd, rd_data);
   }
 
-  constexpr void handle_type_csr_reg(const Decoder::Instruction_info &instr_info, Memory &rf, Memory &csr) {
+  void handle_type_csr_reg(const Decoder::Instruction_info &instr_info, Memory &rf, Memory &csr) {
     const Csr_op op{to_csr_op(instr_info.instruction)};
     const Uxlen rd_data{exec_csr_op(csr, op, instr_info.imm,
         rf.read(instr_info.rs1))};

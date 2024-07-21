@@ -30,7 +30,7 @@ class Config_db {
 
 
   private:
-    constexpr Config_db()  = default;
+    Config_db()  = default;
     ~Config_db() = default;
 
     Isa_ext_container m_isa_extensions{};

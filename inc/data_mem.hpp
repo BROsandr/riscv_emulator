@@ -19,7 +19,7 @@ class Data_mem : public Memory {
         throw Errors::Misalignment{addr, "illegal byte_en (" +
             std::to_string(byte_en) + ") when reading from data_mem"};
       }
-      const auto to_byte = [](Uxlen data_) constexpr {
+      const auto to_byte = [](Uxlen data_) {
         return mapped_type{static_cast<uint8_t>(data_)};
       };
       if (extract_bits(byte_en, 0)) {
@@ -41,7 +41,7 @@ class Data_mem : public Memory {
         throw Errors::Misalignment{addr, "illegal byte_en (" +
             std::to_string(byte_en) + ") when writing to data_mem"};
       }
-      const auto to_uxlen = [](mapped_type b) constexpr {
+      const auto to_uxlen = [](mapped_type b) {
         return static_cast<Uxlen>(b);
       };
       Uxlen data{0};
@@ -67,7 +67,7 @@ class Data_mem : public Memory {
   private:
     Map m_content;
 
-    constexpr bool is_misaliged(std::size_t addr, unsigned int byte_en = 0xf) const {
+    bool is_misaliged(std::size_t addr, unsigned int byte_en = 0xf) const {
       return !((byte_en > 0) && (byte_en <= 0xf));
     }
 
