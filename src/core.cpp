@@ -195,7 +195,7 @@ namespace {
     const Uxlen data{rf.read(instr_info.rs2)};
     const auto lsu_op = to_lsu_op(instr_info.instruction);
     if (Lsu::is_misaligned(lsu_op, addr)) {
-      logger.warn("LSU. Store. Misalignment. Continuing. PC: {:x}, addr: {:x}, LSU op: {}.",
+      logger.warn("LSU. Store. Misalignment. Continuing. PC: 0x{:x}, addr: 0x{:x}, LSU op: {}.",
           pc, addr, to_string(lsu_op));
     }
     data_mem.write(addr, data, Lsu::get_be(lsu_op, addr));
@@ -206,7 +206,7 @@ namespace {
     const std::size_t addr{rf.read(instr_info.rs1) + instr_info.imm};
     const auto lsu_op = to_lsu_op(instr_info.instruction);
     if (Lsu::is_misaligned(lsu_op, addr)) {
-      logger.warn("LSU. Load. Misalignment. Continuing. PC: {:x}, addr: {:x}, LSU op: {}.",
+      logger.warn("LSU. Load. Misalignment. Continuing. PC: 0x{:x}, addr: 0x{:x}, LSU op: {}.",
           pc, addr, to_string(lsu_op));
     }
     Uxlen data{data_mem.read(addr, Lsu::get_be(lsu_op, addr))};
@@ -313,6 +313,6 @@ void Core::cycle() {
 }
 
 [[nodiscard]] Uxlen Core::fetch_instruction() const {
-  m_logger->info("Fetching at pc={:x}", m_pc);
+  m_logger->info("Fetching at pc=0x{:x}", m_pc);
   return m_instr_mem.read(m_pc);
 }
