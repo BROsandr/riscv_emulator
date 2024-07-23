@@ -24,7 +24,7 @@ TEST_CASE("basic", "[BASIC]") {
 
   SECTION("single_instr1") {
     const std::vector<Uxlen> instr{0x00100093}; // addi x1 x0 1
-    const Instr_mem instr_mem{std::move(instr)};
+    Instr_mem instr_mem{std::move(instr)};
     std::map<std::size_t, std::byte> data{};
     Data_mem data_mem{std::move(data)};
     Rf rf{};
