@@ -37,7 +37,7 @@ TEST_CASE("basic", "[BASIC]") {
     } catch (const Errors::Error& exc) {
       my_logger->critical(exc.what());
     } catch (...) {
-      my_logger->critical("Unknown exception");
+      my_logger->critical("Unhandled exception");
     }
 
     REQUIRE(rf.get_content()[0] == 1);
