@@ -6,6 +6,7 @@
   ninja,
   catch2_3,
   pkg-config,
+  spdlog,
   sourceFiles ? lib.fileset.unions [./src ./inc ./tests ./meson.build],
 }:
 let
@@ -28,7 +29,7 @@ stdenv.mkDerivation {
     pkg-config
   ];
 
-  buildInputs = with pkgs; [
+  buildInputs = [
     spdlog.dev
   ];
 }

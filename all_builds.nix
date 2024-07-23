@@ -10,6 +10,7 @@ let
       clang-tools
       clang-analyzer
       clang
+      cmake # helps meson in header-only dependencies searching
     ];
 
     hardeningDisable = ["all"];

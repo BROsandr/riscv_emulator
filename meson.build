@@ -1,8 +1,18 @@
 project('riscv_emulator', 'cpp', default_options : ['cpp_std=c++20'])
 
 incdir = [include_directories('inc')]
+
+if get_option('b_sanitize') != ''
+  header_only = true
+endif
+
+if header_only
+  spdlog_dep = dependency('spdlog', method : 'cmake', modules : ['spdlog::spdlog_header_only'])
+else
+  spdlog_dep = dependency('spdlog')
+endif
+
 catch_dep = dependency('catch2-with-main')
-spdlog_dep = dependency('spdlog')
 dependencies = [catch_dep, spdlog_dep]
 
 src_test_files = {
