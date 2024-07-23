@@ -25,11 +25,11 @@ stdenv.mkDerivation {
   nativeBuildInputs = [
     meson
     ninja
-    catch2_3
     pkg-config
   ];
 
   buildInputs = [
+    catch2_3
     spdlog.dev
   ];
 }
