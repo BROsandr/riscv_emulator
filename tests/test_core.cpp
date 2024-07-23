@@ -40,6 +40,6 @@ TEST_CASE("basic", "[BASIC]") {
       my_logger->critical("Unhandled exception");
     }
 
-    REQUIRE(rf.get_content()[0] == 1);
+    REQUIRE(rf.get_content()[1] == 1);
   }
 }
