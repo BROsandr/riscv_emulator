@@ -40,9 +40,7 @@ class Core {
     Memory &m_rf;
     std::shared_ptr<spdlog::logger> m_logger{nullptr};
     Uxlen m_pc{0};
-    [[nodiscard]] Uxlen fetch_instruction() const {
-      return m_instr_mem.read(m_pc);
-    }
+    [[nodiscard]] Uxlen fetch_instruction() const;
     const Isa_ext_container m_isa_ext_container;
 
     void increment_pc();

@@ -311,3 +311,8 @@ void Core::cycle() {
   pc += 4;
 
 }
+
+[[nodiscard]] Uxlen Core::fetch_instruction() const {
+  m_logger->info("Fetching at pc={:x}", m_pc);
+  return m_instr_mem.read(m_pc);
+}
