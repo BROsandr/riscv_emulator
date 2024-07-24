@@ -22,7 +22,8 @@ class Mem_requirements {
     Mem_requirements(const D &data_mem, const R &rf, const C &csr)
         : m_data_mem{data_mem}, m_rf{rf}, m_csr{csr} {}
 
-    void eq(auto &ref_data_content, auto &ref_rf_content, auto &ref_csr_content) const {
+    void eq(const auto &ref_data_content, const auto &ref_rf_content,
+        const auto &ref_csr_content) const {
       REQUIRE(m_data_mem.get_content() == ref_data_content);
       REQUIRE(m_rf.get_content()       == ref_rf_content  );
       REQUIRE(m_csr.get_content()      == ref_csr_content );
