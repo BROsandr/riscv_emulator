@@ -29,11 +29,14 @@ TEST_CASE("basic", "[BASIC]") {
     Traced_mem_wrap traced_instr_mem{instr_mem, my_logger, "Instr_mem"};
     std::map<std::size_t, std::byte> data{};
     Data_mem data_mem{std::move(data)};
+    Traced_mem_wrap traced_data_mem{data_mem, my_logger, "Data_mem"};
     Rf rf{};
+    Traced_mem_wrap traced_rf{rf, my_logger, "Rf"};
     Csr csr{};
+    Traced_mem_wrap traced_csr{csr, my_logger, "Csr"};
 
-    Core core{traced_instr_mem, data_mem, csr, rf, my_logger,
-        extensions};
+    Core core{traced_instr_mem, data_mem, traced_csr, traced_rf,
+        my_logger, extensions};
 
     try {
       core.cycle();
