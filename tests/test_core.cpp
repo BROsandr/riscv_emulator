@@ -26,13 +26,13 @@ TEST_CASE("basic", "[BASIC]") {
   SECTION("single_instr1") {
     const std::vector<Uxlen> instr{0x00100093}; // addi x1 x0 1
     Instr_mem instr_mem{std::move(instr)};
-    Traced_mem_span traced_instr_mem{instr_mem, my_logger, "Instr_mem"};
+    Traced_mem_wrap traced_instr_mem{instr_mem, my_logger, "Instr_mem"};
     std::map<std::size_t, std::byte> data{};
     Data_mem data_mem{std::move(data)};
     Rf rf{};
     Csr csr{};
 
-    Core core{traced_instr_mem, data_mem, csr, rf, my_logger, 
+    Core core{traced_instr_mem, data_mem, csr, rf, my_logger,
         extensions};
 
     try {

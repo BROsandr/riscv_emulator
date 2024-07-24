@@ -20,13 +20,13 @@ class Memory {
 };
 
 
-class Ranged_mem_span : public Memory {
+class Ranged_mem_wrap : public Memory {
   public:
-    Ranged_mem_span(Memory &memory, std::size_t size, std::size_t start_addr = 0)
+    Ranged_mem_wrap(Memory &memory, std::size_t size, std::size_t start_addr = 0)
         : m_memory{memory}, m_start_addr{start_addr}, m_size{size} {}
-    Ranged_mem_span(const Ranged_mem_span& that) = default;
-    Ranged_mem_span& operator=(Ranged_mem_span) = delete;
-    Ranged_mem_span(Ranged_mem_span&&) = delete;
+    Ranged_mem_wrap(const Ranged_mem_wrap& that) = default;
+    Ranged_mem_wrap& operator=(Ranged_mem_wrap) = delete;
+    Ranged_mem_wrap(Ranged_mem_wrap&&) = delete;
 
     void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override {
       assert_inside_range(addr);
@@ -53,9 +53,9 @@ class Ranged_mem_span : public Memory {
     }
 };
 
-class Traced_mem_span : public Memory {
+class Traced_mem_wrap : public Memory {
   public:
-    Traced_mem_span(Memory &mem, std::shared_ptr<spdlog::logger> logger, std::string msg = "")
+    Traced_mem_wrap(Memory &mem, std::shared_ptr<spdlog::logger> logger, std::string msg = "")
         : m_mem{mem}, m_logger{logger}, m_msg{std::move(msg)} {
       assert(m_logger && "logger == nullptr in Traced_mem");
     }
