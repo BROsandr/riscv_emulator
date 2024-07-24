@@ -3,6 +3,14 @@
 #include "riscv.hpp"
 #include "exception.hpp"
 
+#include <memory>
+
+#include <cassert>
+
+namespace spdlog {
+  class logger;
+}
+
 class Memory {
   public:
     virtual void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) = 0;
@@ -43,4 +51,21 @@ class Ranged_mem_span : public Memory {
     [[nodiscard]] std::size_t get_end_addr() const {
       return m_start_addr + m_size - 1;
     }
+};
+
+class Traced_mem_span : public Memory {
+  public:
+    Traced_mem_span(Memory &mem, std::shared_ptr<spdlog::logger> logger, std::string msg = "")
+        : m_mem{mem}, m_logger{logger}, m_msg{std::move(msg)} {
+      assert(m_logger && "logger == nullptr in Traced_mem");
+    }
+
+    void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override;
+
+    [[nodiscard]] Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override;
+
+  private:
+    Memory &m_mem;
+    std::shared_ptr<spdlog::logger> m_logger{nullptr};
+    const std::string m_msg;
 };

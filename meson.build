@@ -23,12 +23,15 @@ src_test_files = {
       'decoder.cpp'
     ],
     'test_rf.cpp' : [ ],
-    'test_memory.cpp' : [ ],
+    'test_memory.cpp' : [
+      'memory.cpp',
+    ],
     'test_core.cpp' : [
       'alu.cpp',
       'core.cpp',
       'csr.cpp',
       'decoder.cpp',
+      'memory.cpp',
     ],
 }
 test_dir = 'tests'
