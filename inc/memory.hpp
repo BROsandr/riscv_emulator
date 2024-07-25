@@ -3,6 +3,7 @@
 #include "riscv.hpp"
 #include "exception.hpp"
 
+#include <iterator>
 #include <memory>
 
 #include <cassert>
@@ -69,3 +70,41 @@ class Traced_mem_wrap : public Memory {
     std::shared_ptr<spdlog::logger> m_logger{nullptr};
     const std::string m_msg;
 };
+
+class Mem_iterator {
+
+  public:
+
+    using iterator_category = std::bidirectional_iterator_tag;
+    using difference_type   = std::ptrdiff_t;
+    using value_type        = std::pair<std::size_t, Uxlen>;
+    using pointer           = value_type*;
+    using reference         = value_type&;
+
+    Mem_iterator() = default;
+
+    reference operator*() const { return *m_ptr; }
+    pointer operator->() { return m_ptr; }
+
+    // Prefix increment
+    Mem_iterator& operator++() { ++m_ptr; return *this; }
+
+    // Postfix increment
+    Mem_iterator operator++(int) { Mem_iterator tmp = *this; ++(*this); return tmp; }
+
+    friend bool operator== (const Mem_iterator& a, const Mem_iterator& b) {
+      return a.m_ptr == b.m_ptr;
+    };
+    friend bool operator!= (const Mem_iterator& a, const Mem_iterator& b) {
+      return a.m_ptr != b.m_ptr;
+    };
+
+    Mem_iterator& operator--() { --m_ptr; return *this; }
+
+    Mem_iterator operator--(int) { Mem_iterator tmp = *this; --(*this); return tmp; }
+
+  private:
+    Mem_iterator(pointer ptr) : m_ptr{ptr} {}
+    pointer m_ptr;
+};
+static_assert(std::bidirectional_iterator<Mem_iterator>);
