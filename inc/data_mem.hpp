@@ -5,11 +5,11 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
-#include <map>
+#include <unordered_map>
 
 class Data_mem : public Memory {
   public:
-    using Map = std::map<std::size_t, std::byte>;
+    using Map = std::unordered_map<std::size_t, std::byte>;
     Data_mem(Map content) : m_content{std::move(content)} {}
 
     using mapped_type = Map::mapped_type;

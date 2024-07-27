@@ -14,8 +14,6 @@
 #define CATCH_CONFIG_MAIN
 #include "catch2/catch_test_macros.hpp"
 
-#include <map>
-
 template <typename D, typename R, typename C>
 class Mem_requirements {
   public:
@@ -46,7 +44,7 @@ TEST_CASE("basic", "[BASIC]") {
     const std::vector<Uxlen> instr{0x00100093}; // addi x1 x0 1
     Instr_mem instr_mem{std::move(instr)};
     Traced_mem_wrap traced_instr_mem{instr_mem, my_logger, "Instr_mem"};
-    std::map<std::size_t, std::byte> data{};
+    std::unordered_map<std::size_t, std::byte> data{};
     Data_mem data_mem{std::move(data)};
     Traced_mem_wrap traced_data_mem{data_mem, my_logger, "Data_mem"};
     Rf rf{};

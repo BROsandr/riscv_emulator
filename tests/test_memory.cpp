@@ -6,8 +6,6 @@
 
 #include <climits>
 
-#include <map>
-
 #define CATCH_CONFIG_MAIN
 
 #include "catch2/catch_test_macros.hpp"
@@ -50,7 +48,7 @@ TEST_CASE("instr mem", "[INSTR_MEM]") {
 using Byte = std::byte;
 
 TEST_CASE("data_mem", "[DATA_MEM]") {
-  using Cont = std::map<std::size_t, Byte>;
+  using Cont = std::unordered_map<std::size_t, Byte>;
 
 
   SECTION("uninitialized_write") {
@@ -196,7 +194,7 @@ TEST_CASE("data_mem", "[DATA_MEM]") {
 }
 
 TEST_CASE("ranged_mem", "[RANGED_MEM]") {
-  using Cont = std::map<std::size_t, Byte>;
+  using Cont = std::unordered_map<std::size_t, Byte>;
   const auto get_ranged_cont = [](Memory &mem)->Ranged_mem_wrap {
     return Ranged_mem_wrap{mem, 11 - 4 + 1, 4};
   };
