@@ -1,7 +1,6 @@
 {
   lib,
   stdenv,
-  pkgs,
   meson,
   ninja,
   catch2_3,
@@ -10,7 +9,7 @@
   sourceFiles ? lib.fileset.unions [./src ./inc ./tests ./meson.build],
 }:
 let
-  fs = pkgs.lib.fileset;
+  fs = lib.fileset;
 in
 
 stdenv.mkDerivation {

@@ -5,7 +5,6 @@ let
   shell = pkgs.mkShell {
     inputsFrom = [ defaultBuild ];
     packages = with pkgs; [
-      niv
       gdb
       clang-tools
       clang-analyzer
