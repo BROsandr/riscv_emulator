@@ -58,7 +58,7 @@ TEST_CASE("basic", "[BASIC]") {
     auto ref_csr_content = csr.get_content();
     auto ref_data_content = data_mem.get_content();
 
-    Core core{traced_instr_mem, data_mem, traced_csr, traced_rf,
+    Core core{traced_instr_mem, traced_data_mem, traced_csr, traced_rf,
         my_logger, extensions};
 
     Mem_requirements mem_reqs{data_mem, rf, csr};
@@ -91,7 +91,7 @@ TEST_CASE("basic", "[BASIC]") {
     auto ref_csr_content = csr.get_content();
     auto ref_data_content = data_mem.get_content();
 
-    Core core{traced_instr_mem, data_mem, traced_csr, traced_rf,
+    Core core{traced_instr_mem, traced_data_mem, traced_csr, traced_rf,
         my_logger, extensions};
 
     Mem_requirements mem_reqs{data_mem, rf, csr};
