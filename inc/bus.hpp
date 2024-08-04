@@ -4,6 +4,7 @@
 #include "memory.hpp"
 
 #include <map>
+#include <vector>
 
 class Bus : public Memory {
   private:
@@ -42,4 +43,25 @@ class Bus : public Memory {
             "Bus. Failed to get a node at addr=" + std::to_string(addr)};
       }
     }
+};
+
+class Common_write_bus : public Memory {
+  public:
+    explicit Common_write_bus(Memory &rw_node) : nodes(1, &rw_node) {};
+
+    void attach(Memory *write_only_node) {
+      nodes.push_back(write_only_node);
+    }
+
+    void write(std::size_t addr, Uxlen data, unsigned int byte_en = 0xf) override {
+      for (auto *el : nodes) el->write(addr, data, byte_en);
+    }
+
+    [[nodiscard]] Uxlen read (std::size_t addr, unsigned int byte_en = 0xf) override {
+      assert(nodes.at(0));
+      return nodes[0]->read(addr, byte_en);
+    }
+
+  private:
+    std::vector<Memory*> nodes{};
 };
