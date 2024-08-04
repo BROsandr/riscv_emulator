@@ -36,7 +36,7 @@ namespace {
   }
 
   constexpr Uxlen get_imm12(Uxlen instruction) {
-    return extract_bits(instruction, {31, 20});
+    return extract_bits(instruction, {31, 20}, true);
   }
 
   constexpr Uxlen get_shamt5(Uxlen instruction) {
@@ -44,7 +44,7 @@ namespace {
   }
 
   constexpr Uxlen get_simm12(Uxlen instruction) {
-    return extract_bits(instruction, {{11, 5}, {4, 0}}, true);
+    return extract_bits(instruction, {{31, 25}, {11, 7}}, true);
   }
 
   constexpr Uxlen get_sbimm12(Uxlen instruction) {
