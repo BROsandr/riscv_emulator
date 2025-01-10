@@ -1,0 +1,7 @@
+[requires]
+catch2/3.8.0
+spdlog/1.15.0
+
+[generators]
+PkgConfigDeps
+MesonToolchain
